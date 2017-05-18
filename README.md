@@ -8,4 +8,4 @@ Client of **Richkware-Manager-Server**, that obtains list of all hosts and is ab
 
 [Richkware-Manager-Server](https://github.com/richkmeli/Richkware-Manager-Server): Service for management of hosts where is present a malware developped using **Richkware** framework.
 
-<img src="http://richk.altervista.org/Richkware.jpg">
+<img src="http://richk.altervista.org/Richkware.svg">
