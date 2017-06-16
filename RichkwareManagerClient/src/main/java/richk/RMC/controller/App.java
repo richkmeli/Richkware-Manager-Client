@@ -1,7 +1,8 @@
 package richk.RMC.controller;
 
+import jdk.nashorn.internal.parser.JSONParser;
+import richk.RMC.model.Device;
 import richk.RMC.swing.MainPanel;
-import richk.RMC.swing.SwingView;
 import richk.RMC.view.View;
 
 /**
@@ -9,12 +10,19 @@ import richk.RMC.view.View;
  */
 public class App implements Runnable {
     protected View view;    // comunicazione da controller a view
+    private Network network;
 
     public void run() {
         LookAndFeel.initLookAndFeel("System","Metal");
-        view = new SwingView(this);
+        view = new MainPanel(this);
+        network = new Network();
     }
 
+    public String GetDevicesList(String url) {
+        String sDevicesList = network.GetURLContents(url);
+        System.out.println(sDevicesList);
+        return sDevicesList;
+    }
 
 
 }

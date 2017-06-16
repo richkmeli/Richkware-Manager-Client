@@ -12,7 +12,9 @@ import java.awt.event.ActionListener;
 /**
  * Created by richk on 25/05/17.
  */
-public class MainPanel{
+public class MainPanel implements View{
+    protected App app;
+    private JFrame MainFrame;
 
     protected JPanel MainPanel;
     private JButton SendCommandButton;
@@ -27,6 +29,26 @@ public class MainPanel{
     private JPanel ButtonsPanel;
     private JButton button2;
     private JButton button3;
+
+    public void initialize() {
+        MainFrame = new JFrame();
+        MainFrame.setTitle("Richkware-Manager-Client");
+        MainFrame.setContentPane(MainPanel);
+        MainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MainFrame.pack();
+        MainFrame.setVisible(true);
+    }
+
+    public MainPanel(App appParam) {
+        this.app = appParam;
+        initialize();
+
+        Connect.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                app.GetDevicesList(serverAddressTextField.getText());
+            }
+        });
+    }
 
     private void createUIComponents() {
         // TODO: place custom component creation code here
