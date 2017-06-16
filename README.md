@@ -4,6 +4,8 @@ Client of **Richkware-Manager-Server**, that obtains list of all hosts and is ab
 
 ## Related Projects
 
-[Richkware](https://github.com/richkmeli/Richkware): Framework for building Windows malwares.
+[Richkware](https://github.com/richkmeli/Richkware): Framework for building Windows malware.
 
 [Richkware-Manager-Server](https://github.com/richkmeli/Richkware-Manager-Server): Service for management of hosts where is present a malware developped using **Richkware** framework.
+
+![](http://richk.altervista.org/RichkwareDiagram.svg)
