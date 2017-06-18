@@ -8,7 +8,10 @@ import richk.RMC.view.View;
 import sun.applet.Main;
 
 import javax.swing.*;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -58,14 +61,11 @@ public class MainPanel implements View{
         this.app = appParam;
         deviceList = new ArrayList<Device>();
 
-        initialize();
+        // jtable InfoTable initialisation
+        InfoTable.setModel(new DeviceTableModel(deviceList));
 
-       /* try {
-            InfoTable.setModel(new DeviceTableModel());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-*/
+
+        initialize();
 
 
         Connect.addActionListener(new ActionListener() {
@@ -100,10 +100,22 @@ public class MainPanel implements View{
             deviceList = app.RefreshDevice(serverAddressTextField.getText());
             progressBar1.setValue(50);
             InfoTable.setModel(new DeviceTableModel(deviceList));
+            updateRowHeights(InfoTable);
             progressBar1.setValue(100);
         } catch (ModelException e1) {
             errorPanel(e1.toString());
             e1.printStackTrace();
+        }
+    }
+
+    private void updateRowHeights(JTable jTable) {
+        for (int row = 0; row < jTable.getRowCount(); row++) {
+            int rowHeight = jTable.getRowHeight();
+            for (int column = 0; column < jTable.getColumnCount(); column++) {
+                Component comp = jTable.prepareRenderer(jTable.getCellRenderer(row, column), row, column);
+                rowHeight = Math.max(rowHeight, comp.getPreferredSize().height);
+            }
+            jTable.setRowHeight(row, rowHeight);
         }
     }
 

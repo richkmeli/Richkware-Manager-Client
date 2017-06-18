@@ -2,6 +2,8 @@ package richk.RMC.swing;
 
 import richk.RMC.model.Device;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.security.InvalidParameterException;
@@ -17,12 +19,6 @@ public class DeviceTableModel implements TableModel {
     public DeviceTableModel(List<Device> deviceList1) {
         super();
         this.deviceList = deviceList1;
-    }
-
-    public DeviceTableModel() {
-        super();
-        this.deviceList = new ArrayList<Device>();
-        deviceList.add(new Device("","","",""));
     }
 
     public int getRowCount() {
@@ -44,7 +40,7 @@ public class DeviceTableModel implements TableModel {
     }
 
     public Class<?> getColumnClass(int columnIndex) {
-        return null;
+        return String.class;
     }
 
     public boolean isCellEditable(int rowIndex, int columnIndex) {
