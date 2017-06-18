@@ -12,28 +12,28 @@ import java.net.URLConnection;
  */
 public class Network {
 
-    public String GetURLContents(String sUrl) {
+    public String GetURLContents(String sUrl) throws NetworkException {
         StringBuilder outString = new StringBuilder();
 
         URL url = null;
         try {
             url = new URL(sUrl);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new NetworkException(e);
         }
 
-        URLConnection yc = null;
-        BufferedReader in = null;
+        URLConnection urlConnection = null;
+        BufferedReader bufferedReader = null;
 
         try {
-            yc = url.openConnection();
-            in = new BufferedReader(new InputStreamReader(yc.getInputStream()));
+            urlConnection = url.openConnection();
+            bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
             String inputLine;
-            while ((inputLine = in.readLine()) != null)
+            while ((inputLine = bufferedReader.readLine()) != null)
                 outString.append(inputLine);
-            in.close();
+            bufferedReader.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new NetworkException(e);
         }
 
         return outString.toString();
