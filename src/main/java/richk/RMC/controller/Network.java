@@ -1,11 +1,7 @@
 package richk.RMC.controller;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.io.*;
+import java.net.*;
 
 /**
  * Created by richk on 17/06/17.
@@ -38,4 +34,89 @@ public class Network {
 
         return outString.toString();
     }
+
+   /* public String ConnectDevice(String ip, String port) {
+
+    }
+
+    public String DisconnectDevice(String ip, String port) {
+
+    }*/
+
+    public String SendCommand(String ip, String port, String command) throws NetworkException {
+        StringBuilder response = new StringBuilder();
+
+        InetAddress receiverIP = null;
+        try {
+            receiverIP = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            throw new NetworkException(e);
+        }
+        // client socket
+        Socket talkSocket = null;
+
+        PrintWriter talkBuffer;
+        BufferedReader bufferedReader;
+
+        try {
+            talkSocket = new Socket();
+            talkSocket.connect(new InetSocketAddress(receiverIP, Integer.parseInt(port)), 3000);
+        } catch (IOException e) {
+            throw new NetworkException(e);
+            //throw new IOException("Failed to open socket on " + port);
+        }
+
+        try {
+
+            talkBuffer =
+                    new PrintWriter(
+                            new BufferedWriter(
+                                    new OutputStreamWriter(
+                                            talkSocket.getOutputStream())), true);
+
+            bufferedReader =
+                    new BufferedReader(
+                            new InputStreamReader(
+                                    talkSocket.getInputStream()));
+
+
+            //boolean end = false;
+            //while (!end) {
+
+            bufferedReader.readLine(); // empty line
+            String s = bufferedReader.readLine();
+            if (s.compareTo("Connection Established") == 0) {
+                // send command
+                talkBuffer.println(command);
+                // receive response
+                s = bufferedReader.readLine();
+                while (s.compareTo("error: Malformed command") != 0) {
+                    response.append(s);
+                    talkBuffer.println();
+                    s = bufferedReader.readLine();
+                }
+
+                //    if (command.contains("quit")) {
+                //        end = true;
+                //    }
+                //}
+            }
+
+            bufferedReader.close();
+            talkBuffer.close();
+            talkSocket.close();
+
+        } catch (IOException e) {
+            try {
+                talkSocket.close();
+            } catch (IOException e1) {
+                throw new NetworkException(e);
+            }
+            throw new NetworkException(e);
+            //throw new IOException("Exception of communication buffer");
+        }
+
+        return response.toString();
+    }
+
 }

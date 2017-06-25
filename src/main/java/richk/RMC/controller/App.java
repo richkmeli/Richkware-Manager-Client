@@ -2,7 +2,6 @@ package richk.RMC.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import jdk.nashorn.internal.parser.JSONParser;
 import richk.RMC.model.Device;
 import richk.RMC.model.ModelException;
 import richk.RMC.swing.MainPanel;
@@ -21,12 +20,12 @@ public class App implements Runnable {
     private Network network;
 
     public void run() {
-        LookAndFeel.initLookAndFeel("System","Metal");
+        LookAndFeel.initLookAndFeel("System", "Metal");
         view = new MainPanel(this);
         network = new Network();
     }
 
-    public List<Device> RefreshDevice(String url) throws ModelException{
+    public List<Device> RefreshDevice(String url) throws ModelException {
         List<Device> deviceList = new ArrayList<Device>();
         String sDevicesList = null;
         Gson gson = new Gson();
@@ -37,11 +36,26 @@ public class App implements Runnable {
             throw new ModelException(e);
         }
 
-        Type listType = new TypeToken<ArrayList<Device>>(){}.getType();
+        Type listType = new TypeToken<ArrayList<Device>>() {
+        }.getType();
 
         deviceList = gson.fromJson(sDevicesList, listType);
 
         return deviceList;
+    }
+
+    public String SendCommand(String ip, String port, String command) throws ModelException {
+        String response = null;
+
+        //command = Crypto.Encrypt(command,"richktest");
+
+        try {
+            response = network.SendCommand(ip, port, command);
+        } catch (NetworkException e1) {
+            throw new ModelException(e1);
+        }
+
+        return response;
     }
 
 
