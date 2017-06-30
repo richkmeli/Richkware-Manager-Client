@@ -18,7 +18,7 @@ public class MainPanel implements View {
     protected App app;
     private JFrame MainFrame;
     private List<Device> deviceList;
-    private Integer selectedDeviceRow;
+    private Device device;
 
     protected JPanel MainPanel;
     private JButton SendCommandButton;
@@ -36,6 +36,9 @@ public class MainPanel implements View {
     private JTextArea DeviceResponseTextArea;
     private JScrollPane DeviceResponseScrollPanel;
     private JPanel DeviceResponsePanel;
+    private JTextField addressOfDeviceTextField;
+    private JTextField commandToSendTextField;
+    private JCheckBox directCheckBox;
 
     public void initialize() {
         MainFrame = new JFrame();
@@ -50,6 +53,11 @@ public class MainPanel implements View {
         });
         MainFrame.pack();
         MainFrame.setVisible(true);
+
+        Disconnect.setEnabled(false);
+        SendCommandButton.setEnabled(false);
+        DisconnectDevice.setEnabled(false);
+        addressOfDeviceTextField.setEnabled(false);
     }
 
     public MainPanel(App appParam) {
@@ -64,27 +72,31 @@ public class MainPanel implements View {
         Connect.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 RefreshTable();
+                Disconnect.setEnabled(true);
             }
         });
 
         SendCommandButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (selectedDeviceRow != null) {
-                    Device device = deviceList.get(selectedDeviceRow);
+                if (device != null) {
                     if (device.getServerPort().compareTo("none") == 0) {
                         errorPanel("This device has ServerPort close");
                     } else {
                         try {
-                            String response = app.SendCommand(device.getIP(), device.getServerPort(), "[[1]]dir");
-                            DeviceResponseTextArea.append(response);
-                            DeviceResponseTextArea.setLineWrap(true);
-
+                            String command = commandToSendTextField.getText();
+                            if(command.compareTo("")==0 || command.compareTo("Command to send")==0) {
+                                errorPanel("Write the command to execute on device");
+                            }else{
+                                String response = app.SendCommand(device.getIP(), device.getServerPort(), "[[1]]" + command);
+                                DeviceResponseTextArea.append(response);
+                                DeviceResponseTextArea.setLineWrap(true);
+                            }
                         } catch (ModelException e1) {
                             errorPanel(e1.toString());
                         }
                     }
-                }else {
+                } else {
                     errorPanel("Connect to device. Before to send command select a device");
                 }
             }
@@ -93,17 +105,87 @@ public class MainPanel implements View {
         ConnectDevice.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectedDeviceRow = InfoTable.getSelectedRow();
-                updateRowColor(InfoTable,selectedDeviceRow,Color.GREEN);
-                InfoTable.getSelectionModel().clearSelection();
+                if(deviceList.isEmpty() && directCheckBox.isEnabled()){
+                    try {
+                        String ipport = addressOfDeviceTextField.getText();
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "");
+
+                        SendCommandButton.setEnabled(true);
+                        DisconnectDevice.setEnabled(true);
+                    }catch (Exception e1){
+                        errorPanel("Address not correct. The syntax is IP:PORT");
+                    }
+                }else {
+                    Integer selectedDeviceRow = InfoTable.getSelectedRow();
+                    if (selectedDeviceRow != null) {
+                        DisconnectDev();
+                        device = deviceList.get(selectedDeviceRow);
+                        if (device.getServerPort().compareTo("none") == 0) {
+                            DisconnectDev();
+                            errorPanel("This device has ServerPort close");
+                        } else {
+                            addressOfDeviceTextField.setText(device.getIP() + ":" + device.getServerPort());
+
+                            SendCommandButton.setEnabled(true);
+                            DisconnectDevice.setEnabled(true);
+
+                            //updateRowColor(InfoTable, selectedDeviceRow, Color.GREEN);
+                            //InfoTable.getSelectionModel().clearSelection();
+                        }
+                    } else {
+                        errorPanel("Select a device");
+                    }
+                }
+
             }
         });
         DisconnectDevice.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                updateRowColor(InfoTable,selectedDeviceRow,Color.WHITE);
-                InfoTable.repaint();
-                selectedDeviceRow = null;
+                DisconnectDev();
+                SendCommandButton.setEnabled(false);
+                DisconnectDevice.setEnabled(false);
+            }
+        });
+        Disconnect.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                deviceList = new ArrayList<Device>();
+                InfoTable.setModel(new DeviceTableModel(deviceList));
+                Disconnect.setEnabled(false);
+            }
+        });
+        directCheckBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (directCheckBox.isSelected()){
+                    addressOfDeviceTextField.setEnabled(true);
+                }else{
+                    addressOfDeviceTextField.setEnabled(false);
+                    addressOfDeviceTextField.setText("");
+                    deviceList = new ArrayList<Device>();
+                }
+            }
+        });
+        serverAddressTextField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                serverAddressTextField.setText("");
+            }
+        });
+        addressOfDeviceTextField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                addressOfDeviceTextField.setText("");
+            }
+        });
+        commandToSendTextField.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                commandToSendTextField.setText("");
             }
         });
     }
@@ -160,6 +242,16 @@ public class MainPanel implements View {
             // TODO: bug, all rows colored after connection to a device
             component.setBackground(color);
         }
+    }
+
+    private void DisconnectDev(){
+        device = null;
+
+        /*for(int i = 0; i < deviceList.size(); ++i){
+            updateRowColor(InfoTable, i, Color.WHITE);
+        }
+        InfoTable.repaint();
+        */
     }
 
 }

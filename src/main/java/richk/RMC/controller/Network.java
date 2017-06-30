@@ -91,15 +91,12 @@ public class Network {
                 // receive response
                 s = bufferedReader.readLine();
                 while (s.compareTo("error: Malformed command") != 0) {
-                    response.append(s);
+                    response.append(s).append("\n");
                     talkBuffer.println();
                     s = bufferedReader.readLine();
                 }
-
-                //    if (command.contains("quit")) {
-                //        end = true;
-                //    }
-                //}
+                // disconnection TODO: implement the execution of more command inside a connection
+                talkBuffer.println("[[0]]");
             }
 
             bufferedReader.close();

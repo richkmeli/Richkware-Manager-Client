@@ -12,6 +12,4 @@ Client of **Richkware-Manager-Server**, that obtains list of all hosts and is ab
 
 ## GUI
 
-![](http://richk.altervista.org/rmc.jpg)
-
-![](http://richk.altervista.org/rmc2.jpg)
+![](http://richk.altervista.org/rmc.svg)
