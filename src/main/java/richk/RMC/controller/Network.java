@@ -1,7 +1,22 @@
 package richk.RMC.controller;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import richk.RMC.util.Crypto;
+import richk.RMC.util.CryptoException;
+import richk.RMC.util.KeyExchangePayload;
+
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import javax.xml.bind.DatatypeConverter;
 import java.io.*;
+import java.lang.reflect.Type;
 import java.net.*;
+import java.security.GeneralSecurityException;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * Created by richk on 17/06/17.
@@ -32,7 +47,38 @@ public class Network {
             throw new NetworkException(e);
         }
 
-        return outString.toString();
+        String out = outString.toString();
+        return out;
+    }
+  public String GetEncryptedURLContents(String sUrl) throws NetworkException {
+        String out = null;
+        try {
+            KeyPair keyPair = Crypto.GetGeneratedKeyPairRSA();
+            PublicKey RSApublicKeyClient = keyPair.getPublic();
+            PrivateKey RSAprivateKeyClient = keyPair.getPrivate();
+
+           // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
+            String url = null;
+            try {
+                url = sUrl + "?encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
+            } catch (GeneralSecurityException e) {
+                throw new NetworkException(e);
+            }
+
+            out = GetURLContents(url);
+            Type listType = new TypeToken<KeyExchangePayload>() {}.getType();
+            Gson gson = new Gson();
+            KeyExchangePayload keyExchangePayload = gson.fromJson(out, listType);
+
+            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload,RSAprivateKeyClient);
+            String data = keyExchangePayload.getData();
+
+            out = Crypto.DecryptAES(data, AESsecretKey);
+        } catch (CryptoException e) {
+            throw new NetworkException(e);
+        }
+
+        return out;
     }
 
    /* public String ConnectDevice(String ip, String port) {

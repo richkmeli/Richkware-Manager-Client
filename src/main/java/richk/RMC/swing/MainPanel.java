@@ -39,6 +39,7 @@ public class MainPanel implements View {
     private JTextField addressOfDeviceTextField;
     private JTextField commandToSendTextField;
     private JCheckBox directCheckBox;
+    private JCheckBox encryptionCheckBox;
 
     public void initialize() {
         MainFrame = new JFrame();
@@ -81,13 +82,13 @@ public class MainPanel implements View {
             public void actionPerformed(ActionEvent e) {
                 if (device != null) {
                     if (device.getServerPort().compareTo("none") == 0) {
-                        errorPanel("This device has ServerPort close");
+                        errorPanel("ServerPort of this device is closed");
                     } else {
                         try {
                             String command = commandToSendTextField.getText();
-                            if(command.compareTo("")==0 || command.compareTo("Command to send")==0) {
+                            if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
                                 errorPanel("Write the command to execute on device");
-                            }else{
+                            } else {
                                 String response = app.SendCommand(device.getIP(), device.getServerPort(), "[[1]]" + command);
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
@@ -105,24 +106,24 @@ public class MainPanel implements View {
         ConnectDevice.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(deviceList.isEmpty() && directCheckBox.isEnabled()){
+                if (deviceList.isEmpty() && directCheckBox.isEnabled()) {
                     try {
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "");
 
                         SendCommandButton.setEnabled(true);
                         DisconnectDevice.setEnabled(true);
-                    }catch (Exception e1){
+                    } catch (Exception e1) {
                         errorPanel("Address not correct. The syntax is IP:PORT");
                     }
-                }else {
+                } else {
                     Integer selectedDeviceRow = InfoTable.getSelectedRow();
                     if (selectedDeviceRow != null) {
                         DisconnectDev();
                         device = deviceList.get(selectedDeviceRow);
                         if (device.getServerPort().compareTo("none") == 0) {
                             DisconnectDev();
-                            errorPanel("This device has ServerPort close");
+                            errorPanel("ServerPort of this device is closed");
                         } else {
                             addressOfDeviceTextField.setText(device.getIP() + ":" + device.getServerPort());
 
@@ -158,9 +159,9 @@ public class MainPanel implements View {
         directCheckBox.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (directCheckBox.isSelected()){
+                if (directCheckBox.isSelected()) {
                     addressOfDeviceTextField.setEnabled(true);
-                }else{
+                } else {
                     addressOfDeviceTextField.setEnabled(false);
                     addressOfDeviceTextField.setText("");
                     deviceList = new ArrayList<Device>();
@@ -211,10 +212,14 @@ public class MainPanel implements View {
     private void RefreshTable() {
         try {
             progressBar1.setValue(0);
-            deviceList = app.RefreshDevice(serverAddressTextField.getText());
+
+            // if encryption check box is selected, RMC uses encryption to refresh the list of devices
+            deviceList = app.RefreshDevice(serverAddressTextField.getText(), encryptionCheckBox.isSelected());
             progressBar1.setValue(50);
+
             InfoTable.setModel(new DeviceTableModel(deviceList));
             updateRowHeights(InfoTable);
+
             progressBar1.setValue(100);
             //InfoTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         } catch (ModelException e1) {
@@ -244,7 +249,7 @@ public class MainPanel implements View {
         }
     }
 
-    private void DisconnectDev(){
+    private void DisconnectDev() {
         device = null;
 
         /*for(int i = 0; i < deviceList.size(); ++i){

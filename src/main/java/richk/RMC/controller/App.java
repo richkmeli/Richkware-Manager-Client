@@ -5,7 +5,6 @@ import com.google.gson.reflect.TypeToken;
 import richk.RMC.model.Device;
 import richk.RMC.model.ModelException;
 import richk.RMC.swing.MainPanel;
-import richk.RMC.util.Crypto;
 import richk.RMC.view.View;
 
 import java.lang.reflect.Type;
@@ -25,13 +24,17 @@ public class App implements Runnable {
         network = new Network();
     }
 
-    public List<Device> RefreshDevice(String url) throws ModelException {
+    public List<Device> RefreshDevice(String url, boolean encryption) throws ModelException {
         List<Device> deviceList = new ArrayList<Device>();
         String sDevicesList = null;
         Gson gson = new Gson();
 
         try {
-            sDevicesList = network.GetURLContents(url);
+            if (encryption){
+                sDevicesList = network.GetEncryptedURLContents(url);
+            }else {
+                sDevicesList = network.GetURLContents(url);
+            }
         } catch (NetworkException e) {
             throw new ModelException(e);
         }
