@@ -7,7 +7,7 @@ package richk.RMC;
 import richk.RMC.controller.App;
 
 public class RichkwareManagerClient {
-    public static void main(String[] args){
+    public static void main(String[] args) {
         new App().run();
     }
 }

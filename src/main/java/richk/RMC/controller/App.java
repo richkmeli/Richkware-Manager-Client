@@ -30,9 +30,9 @@ public class App implements Runnable {
         Gson gson = new Gson();
 
         try {
-            if (encryption){
+            if (encryption) {
                 sDevicesList = network.GetEncryptedURLContents(url);
-            }else {
+            } else {
                 sDevicesList = network.GetURLContents(url);
             }
         } catch (NetworkException e) {

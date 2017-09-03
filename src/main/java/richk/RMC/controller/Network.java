@@ -2,14 +2,11 @@ package richk.RMC.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
 import richk.RMC.util.Crypto;
 import richk.RMC.util.CryptoException;
 import richk.RMC.util.KeyExchangePayload;
 
 import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.net.*;
@@ -50,14 +47,15 @@ public class Network {
         String out = outString.toString();
         return out;
     }
-  public String GetEncryptedURLContents(String sUrl) throws NetworkException {
+
+    public String GetEncryptedURLContents(String sUrl) throws NetworkException {
         String out = null;
         try {
             KeyPair keyPair = Crypto.GetGeneratedKeyPairRSA();
             PublicKey RSApublicKeyClient = keyPair.getPublic();
             PrivateKey RSAprivateKeyClient = keyPair.getPrivate();
 
-           // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
+            // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
             String url = null;
             try {
                 url = sUrl + "?encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
@@ -66,11 +64,12 @@ public class Network {
             }
 
             out = GetURLContents(url);
-            Type listType = new TypeToken<KeyExchangePayload>() {}.getType();
+            Type listType = new TypeToken<KeyExchangePayload>() {
+            }.getType();
             Gson gson = new Gson();
             KeyExchangePayload keyExchangePayload = gson.fromJson(out, listType);
 
-            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload,RSAprivateKeyClient);
+            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
             String data = keyExchangePayload.getData();
 
             out = Crypto.DecryptAES(data, AESsecretKey);

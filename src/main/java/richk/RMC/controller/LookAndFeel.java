@@ -20,21 +20,13 @@ public class LookAndFeel {
                 // previous line with:
                 // lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
 
-            }
-
-            else if (LOOKANDFEEL.equals("System")) {
+            } else if (LOOKANDFEEL.equals("System")) {
                 lookAndFeel = UIManager.getSystemLookAndFeelClassName();
-            }
-
-            else if (LOOKANDFEEL.equals("Motif")) {
+            } else if (LOOKANDFEEL.equals("Motif")) {
                 lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-            }
-
-            else if (LOOKANDFEEL.equals("GTK")) {
+            } else if (LOOKANDFEEL.equals("GTK")) {
                 lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-            }
-
-            else {
+            } else {
                 System.err.println("Unexpected value of LOOKANDFEEL specified: "
                         + LOOKANDFEEL);
                 lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
@@ -55,29 +47,21 @@ public class LookAndFeel {
                     else
                         //MetalLookAndFeel.setCurrentTheme(new TestTheme());
 
-                    UIManager.setLookAndFeel(new MetalLookAndFeel());
+                        UIManager.setLookAndFeel(new MetalLookAndFeel());
                 }
 
 
-
-
-            }
-
-            catch (ClassNotFoundException e) {
+            } catch (ClassNotFoundException e) {
                 System.err.println("Couldn't find class for specified look and feel:"
                         + lookAndFeel);
                 System.err.println("Did you include the L&F library in the class path?");
                 System.err.println("Using the default look and feel.");
-            }
-
-            catch (UnsupportedLookAndFeelException e) {
+            } catch (UnsupportedLookAndFeelException e) {
                 System.err.println("Can't use the specified look and feel ("
                         + lookAndFeel
                         + ") on this platform.");
                 System.err.println("Using the default look and feel.");
-            }
-
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("Couldn't get specified look and feel ("
                         + lookAndFeel
                         + "), for some reason.");
