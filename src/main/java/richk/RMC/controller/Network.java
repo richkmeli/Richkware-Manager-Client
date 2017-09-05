@@ -88,7 +88,7 @@ public class Network {
 
     }*/
 
-    public String SendCommand(String ip, String port,String encryptionKey, String command) throws NetworkException {
+    public String SendCommand(String ip, String port, String encryptionKey, boolean forceEncryption, String command) throws NetworkException {
         StringBuilder response = new StringBuilder();
 
         InetAddress receiverIP = null;
@@ -131,25 +131,36 @@ public class Network {
             bufferedReader.readLine(); // empty line
             String s = bufferedReader.readLine();
 
-            if (s.compareTo("Connection Established") == 0) {
+            if (s.compareTo("Encrypted Connection Established") == 0 || forceEncryption) {
                 // send command
-                if (encryptionKey != null) command = Crypto.EncryptRC4(command,encryptionKey);
-
+                command = Crypto.EncryptRC4(command, encryptionKey);
                 talkBuffer.println(command);
-
                 // receive response
                 s = bufferedReader.readLine();
-                if (encryptionKey != null) s = Crypto.DecryptRC4(s,encryptionKey);
+                s = Crypto.DecryptRC4(s, encryptionKey);
 
                 while (s.compareTo("error: Malformed command") != 0) {
                     response.append(s).append("\n");
                     talkBuffer.println();
                     s = bufferedReader.readLine();
-                    if (encryptionKey != null) s = Crypto.DecryptRC4(s,encryptionKey);
+                    s = Crypto.DecryptRC4(s, encryptionKey);
+                }
+                // disconnection TODO: implement the execution of more command inside a connection
+                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
+                talkBuffer.println(command);
+
+            } else if (s.compareTo("Connection Established") == 0) {
+                // send command
+                talkBuffer.println(command);
+                // receive response
+                s = bufferedReader.readLine();
+                while (s.compareTo("error: Malformed command") != 0) {
+                    response.append(s).append("\n");
+                    talkBuffer.println();
+                    s = bufferedReader.readLine();
                 }
                 // disconnection TODO: implement the execution of more command inside a connection
                 command = "[[0]]";
-                if (encryptionKey != null) command = Crypto.EncryptRC4(command,encryptionKey);
                 talkBuffer.println(command);
             }
 

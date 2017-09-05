@@ -40,7 +40,7 @@ public class MainPanel implements View {
     private JTextField commandToSendTextField;
     private JCheckBox directCheckBox;
     private JCheckBox encryptionCheckBox;
-    private JCheckBox encryptionCommandCheckBox;
+    private JCheckBox forceEncryptionCommandCheckBox;
     private JPanel SendCommandPanel;
     private JPanel ConnectToDevicePanel;
     private JButton fileButton;
@@ -97,10 +97,10 @@ public class MainPanel implements View {
                                 errorPanel("Write the command to execute on device");
                             } else {
                                 String response = null;
-                                if (encryptionCommandCheckBox.isSelected()) {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), "[[1]]" + command);
+                                if (forceEncryptionCommandCheckBox.isSelected()) {
+                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
                                 } else {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), null, "[[1]]" + command);
+                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
                                 }
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);

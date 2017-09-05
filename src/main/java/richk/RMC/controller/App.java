@@ -48,10 +48,10 @@ public class App implements Runnable {
         return deviceList;
     }
 
-    public String SendCommand(String ip, String port, String encryptionKey, String command) throws ModelException {
+    public String SendCommand(String ip, String port, String encryptionKey, boolean forceEncryption, String command) throws ModelException {
         String response = null;
         try {
-            response = network.SendCommand(ip, port,encryptionKey, command);
+            response = network.SendCommand(ip, port,encryptionKey, forceEncryption, command);
         } catch (NetworkException e) {
             throw new ModelException(e);
         }
