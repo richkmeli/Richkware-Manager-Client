@@ -29,15 +29,15 @@ public class DeviceTableModel implements TableModel {
     public String getColumnName(int columnIndex) {
         switch (columnIndex) {
             case 0:
-                return "name";
+                return "Name";
             case 1:
                 return "IP";
             case 2:
-                return "serverPort";
+                return "Server Port";
             case 3:
-                return "lastConnection";
+                return "Last Connection";
             case 4:
-                return "encryptionKey";
+                return "Encryption Key";
             default:
                 throw new InvalidParameterException("Column Index not valid");
         }

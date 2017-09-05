@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import richk.RMC.model.Device;
 import richk.RMC.model.ModelException;
 import richk.RMC.swing.MainPanel;
+import richk.RMC.util.Crypto;
 import richk.RMC.view.View;
 
 import java.lang.reflect.Type;
@@ -47,19 +48,14 @@ public class App implements Runnable {
         return deviceList;
     }
 
-    public String SendCommand(String ip, String port, String command) throws ModelException {
+    public String SendCommand(String ip, String port, String encryptionKey, String command) throws ModelException {
         String response = null;
-
-        //command = Crypto.Encrypt(command,"richktest");
-
         try {
-            response = network.SendCommand(ip, port, command);
-        } catch (NetworkException e1) {
-            throw new ModelException(e1);
+            response = network.SendCommand(ip, port,encryptionKey, command);
+        } catch (NetworkException e) {
+            throw new ModelException(e);
         }
-
         return response;
     }
-
 
 }

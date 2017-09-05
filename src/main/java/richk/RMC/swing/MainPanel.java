@@ -40,6 +40,13 @@ public class MainPanel implements View {
     private JTextField commandToSendTextField;
     private JCheckBox directCheckBox;
     private JCheckBox encryptionCheckBox;
+    private JCheckBox encryptionCommandCheckBox;
+    private JPanel SendCommandPanel;
+    private JPanel ConnectToDevicePanel;
+    private JButton fileButton;
+    private JButton editButton;
+    private JButton viewButton;
+    private JButton helpButton;
 
     public void initialize() {
         MainFrame = new JFrame();
@@ -89,7 +96,12 @@ public class MainPanel implements View {
                             if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
                                 errorPanel("Write the command to execute on device");
                             } else {
-                                String response = app.SendCommand(device.getIP(), device.getServerPort(), "[[1]]" + command);
+                                String response = null;
+                                if (encryptionCommandCheckBox.isSelected()) {
+                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), "[[1]]" + command);
+                                } else {
+                                    response = app.SendCommand(device.getIP(), device.getServerPort(), null, "[[1]]" + command);
+                                }
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
                             }

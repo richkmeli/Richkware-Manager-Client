@@ -88,7 +88,7 @@ public class Network {
 
     }*/
 
-    public String SendCommand(String ip, String port, String command) throws NetworkException {
+    public String SendCommand(String ip, String port,String encryptionKey, String command) throws NetworkException {
         StringBuilder response = new StringBuilder();
 
         InetAddress receiverIP = null;
@@ -130,18 +130,27 @@ public class Network {
 
             bufferedReader.readLine(); // empty line
             String s = bufferedReader.readLine();
+
             if (s.compareTo("Connection Established") == 0) {
                 // send command
+                if (encryptionKey != null) command = Crypto.EncryptRC4(command,encryptionKey);
+
                 talkBuffer.println(command);
+
                 // receive response
                 s = bufferedReader.readLine();
+                if (encryptionKey != null) s = Crypto.DecryptRC4(s,encryptionKey);
+
                 while (s.compareTo("error: Malformed command") != 0) {
                     response.append(s).append("\n");
                     talkBuffer.println();
                     s = bufferedReader.readLine();
+                    if (encryptionKey != null) s = Crypto.DecryptRC4(s,encryptionKey);
                 }
                 // disconnection TODO: implement the execution of more command inside a connection
-                talkBuffer.println("[[0]]");
+                command = "[[0]]";
+                if (encryptionKey != null) command = Crypto.EncryptRC4(command,encryptionKey);
+                talkBuffer.println(command);
             }
 
             bufferedReader.close();
@@ -162,3 +171,4 @@ public class Network {
     }
 
 }
+
