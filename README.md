@@ -1,4 +1,5 @@
 # Richkware-Manager-Client
+[![Build Status](https://travis-ci.org/richkmeli/Richkware-Manager-Client.svg?branch=master)](https://travis-ci.org/richkmeli/Richkware-Manager-Client)
 
 Client of **Richkware-Manager-Server**, that obtains list of all hosts and is able to send commands to do at each of them.
 
