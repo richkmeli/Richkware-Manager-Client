@@ -73,7 +73,11 @@ public class MainPanel implements View {
         deviceList = new ArrayList<Device>();
 
         // jtable InfoTable initialisation
-        InfoTable.setModel(new DeviceTableModel(deviceList));
+        try {
+            InfoTable.setModel(new DeviceTableModel(deviceList));
+        }catch (NullPointerException npe){
+            System.err.println(npe.getMessage());
+        }
 
         initialize();
 

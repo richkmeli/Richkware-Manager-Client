@@ -11,9 +11,10 @@
         </repository>
     </repositories>
 
-    <groupId>Richkware-Manager-Client</groupId>
-    <artifactId>Richkware-Manager-Client</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <groupId>it.richkmeli.RMC</groupId>
+    <artifactId>RichkwareManagerClient</artifactId>
+    <version>1.0</version>
+
     <build>
         <plugins>
             <plugin>
@@ -24,6 +25,55 @@
                     <target>1.6</target>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <descriptorRefs>
+                        <descriptorRef>jar-with-dependencies</descriptorRef>
+                    </descriptorRefs>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <mainClass>it.richkmeli.RMC.RichkwareManagerClient</mainClass>
+                        </manifest>
+                    </archive>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>ideauidesigner-maven-plugin</artifactId>
+                <version>1.0-beta-1</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>javac2</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <fork>true</fork>
+                    <debug>true</debug>
+                    <failOnError>true</failOnError>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
@@ -38,6 +88,12 @@
             <artifactId>JCrypto</artifactId>
             <version>v1.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.intellij</groupId>
+            <artifactId>forms_rt</artifactId>
+            <version>7.0.3</version>
+        </dependency>
+
     </dependencies>
 
 
