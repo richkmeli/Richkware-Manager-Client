@@ -1,6 +1,6 @@
-package richk.RMC.swing;
+package it.richkmeli.RMC.swing;
 
-import richk.RMC.model.Device;
+import it.richkmeli.RMC.model.Device;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;

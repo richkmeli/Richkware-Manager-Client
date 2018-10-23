@@ -1,10 +1,10 @@
-package richk.RMC.controller;
+package it.richkmeli.RMC.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import richk.RMC.util.Crypto;
-import richk.RMC.util.CryptoException;
-import richk.RMC.util.KeyExchangePayload;
+import it.richkmeli.jcrypto.Crypto;
+import it.richkmeli.jcrypto.exception.CryptoException;
+import it.richkmeli.jcrypto.KeyExchangePayload;
 
 import javax.crypto.SecretKey;
 import java.io.*;

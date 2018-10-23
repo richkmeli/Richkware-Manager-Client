@@ -1,4 +1,4 @@
-package richk.RMC.model;
+package it.richkmeli.RMC.model;
 
 public class Device {
     private String name;

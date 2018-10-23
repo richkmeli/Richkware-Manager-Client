@@ -1,12 +1,11 @@
-package richk.RMC.controller;
+package it.richkmeli.RMC.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import richk.RMC.model.Device;
-import richk.RMC.model.ModelException;
-import richk.RMC.swing.MainPanel;
-import richk.RMC.util.Crypto;
-import richk.RMC.view.View;
+import it.richkmeli.RMC.model.Device;
+import it.richkmeli.RMC.model.ModelException;
+import it.richkmeli.RMC.view.View;
+import it.richkmeli.RMC.swing.MainPanel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;

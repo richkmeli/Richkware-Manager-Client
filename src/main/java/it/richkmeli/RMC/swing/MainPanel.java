@@ -1,9 +1,9 @@
-package richk.RMC.swing;
+package it.richkmeli.RMC.swing;
 
-import richk.RMC.controller.App;
-import richk.RMC.model.Device;
-import richk.RMC.model.ModelException;
-import richk.RMC.view.View;
+import it.richkmeli.RMC.controller.App;
+import it.richkmeli.RMC.model.Device;
+import it.richkmeli.RMC.model.ModelException;
+import it.richkmeli.RMC.view.View;
 
 import javax.swing.*;
 import java.awt.*;

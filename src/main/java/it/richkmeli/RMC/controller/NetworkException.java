@@ -1,6 +1,6 @@
-package richk.RMC.controller;
+package it.richkmeli.RMC.controller;
 
-import richk.RMC.model.ModelException;
+import it.richkmeli.RMC.model.ModelException;
 
 /**
  * Created by richk on 17/06/17.

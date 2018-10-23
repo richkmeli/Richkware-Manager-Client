@@ -1,4 +1,4 @@
-package richk.RMC.model;
+package it.richkmeli.RMC.model;
 
 /**
  * Created by richk on 17/06/17.

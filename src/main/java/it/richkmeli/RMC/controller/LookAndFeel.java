@@ -1,4 +1,4 @@
-package richk.RMC.controller;
+package it.richkmeli.RMC.controller;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.DefaultMetalTheme;
