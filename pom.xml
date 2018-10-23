@@ -12,7 +12,7 @@
     </repositories>
 
     <groupId>it.richkmeli.RMC</groupId>
-    <artifactId>RichkwareManagerClient</artifactId>
+    <artifactId>Richkware-Manager-Client</artifactId>
     <version>1.0</version>
 
     <build>
