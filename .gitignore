@@ -16,3 +16,5 @@ RichkwareManagerClient/RichkwareManagerClient.iml
 RichkwareManagerClient/src/main/resources/
 RichkwareManagerClient/src/test/
 RichkwareManagerClient/target/
+
+*.iml
