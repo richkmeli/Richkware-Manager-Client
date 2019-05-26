@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.jcrypto.Crypto;
 import it.richkmeli.jcrypto.exception.CryptoException;
-import it.richkmeli.jcrypto.KeyExchangePayload;
+import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
 
 import javax.crypto.SecretKey;
 import java.io.*;
@@ -64,13 +64,13 @@ public class Network {
             }
 
             out = GetURLContents(url);
-            Type listType = new TypeToken<KeyExchangePayload>() {
+            Type listType = new TypeToken<KeyExchangePayloadCompat>() {
             }.getType();
             Gson gson = new Gson();
-            KeyExchangePayload keyExchangePayload = gson.fromJson(out, listType);
+            KeyExchangePayloadCompat keyExchangePayloadCompat = gson.fromJson(out, listType);
 
-            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
-            String data = keyExchangePayload.getData();
+            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayloadCompat, RSAprivateKeyClient);
+            String data = keyExchangePayloadCompat.getData();
 
             out = Crypto.DecryptAES(data, AESsecretKey);
         } catch (CryptoException e) {
