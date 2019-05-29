@@ -4,12 +4,15 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.model.Device;
 import it.richkmeli.RMC.model.ModelException;
+import it.richkmeli.RMC.swing.LoginPanel;
 import it.richkmeli.RMC.view.View;
 import it.richkmeli.RMC.swing.MainPanel;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by richk on 25/05/17.
@@ -20,7 +23,8 @@ public class App implements Runnable {
 
     public void run() {
         LookAndFeel.initLookAndFeel("System", "Metal");
-        view = new MainPanel(this);
+        view = new LoginPanel(this);
+        //        view = new MainPanel(this);
         network = new Network();
     }
 
@@ -55,6 +59,16 @@ public class App implements Runnable {
             throw new ModelException(e);
         }
         return response;
+    }
+
+    public String Login(String url, String email, String password) {
+        String result = null;
+        try {
+            result = network.GetURLContents(url+"LogIn?email="+email+"&password="+password);
+        } catch (NetworkException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }
