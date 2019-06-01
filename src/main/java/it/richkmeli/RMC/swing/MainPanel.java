@@ -102,9 +102,9 @@ public class MainPanel implements View {
                             } else {
                                 String response = null;
                                 if (forceEncryptionCommandCheckBox.isSelected()) {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
                                 } else {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
                                 }
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
@@ -184,13 +184,6 @@ public class MainPanel implements View {
                 }
             }
         });
-        serverAddressTextField.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                serverAddressTextField.setText("");
-            }
-        });
         addressOfDeviceTextField.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -230,7 +223,7 @@ public class MainPanel implements View {
             progressBar1.setValue(0);
 
             // if encryption check box is selected, RMC uses encryption to refresh the list of devices
-            deviceList = app.RefreshDevice(serverAddressTextField.getText(), encryptionCheckBox.isSelected());
+            deviceList = app.getController().RefreshDevice(encryptionCheckBox.isSelected());
             progressBar1.setValue(50);
 
             InfoTable.setModel(new DeviceTableModel(deviceList));

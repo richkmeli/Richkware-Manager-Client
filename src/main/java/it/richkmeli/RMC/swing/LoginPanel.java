@@ -1,6 +1,7 @@
 package it.richkmeli.RMC.swing;
 
 import it.richkmeli.RMC.controller.App;
+import it.richkmeli.RMC.controller.NetworkException;
 import it.richkmeli.RMC.model.Device;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
@@ -12,10 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.util.Arrays;
 import java.util.List;
-
-import static javafx.application.Platform.exit;
 
 public class LoginPanel implements View {
     App app;
@@ -29,6 +27,10 @@ public class LoginPanel implements View {
     private JButton loginButton;
     private JTextField urlField;
     private JLabel errorField;
+    private JTextField protocoloField;
+    private JTextField serverField;
+    private JTextField serviceField;
+    private JTextField portField;
 
     public void initialize() {
         MainFrame = new JFrame();
@@ -53,14 +55,19 @@ public class LoginPanel implements View {
             public void actionPerformed(ActionEvent event) {
                 String email = emailField.getText();
                 String password = passwordField.getText();
-                String url = urlField.getText();
+                try {
+                    app.getController().getNetwork().setURL(protocoloField.getText(),serverField.getText(),portField.getText(),serviceField.getText());
+                } catch (NetworkException e) {
+                    errorField.setText(e.getMessage());
+                }
 
-                String response = app.Login(url, email, password);
-                Logger.i(response);
+                String response = app.getController().Login(email, password);
                 try {
                     if (ResponseParser.isStatusOK(response)) {
                         //LOGIN EFFETTUATO
-                        errorField.setText("Ciao");
+//                        errorField.setText(User());
+                        errorField.setText(" ");
+                        app.view = new MainPanel(app);
                     } else {
                         //LOGIN FALLITO
                         errorField.setText(ResponseParser.parseMessage(response));
@@ -74,4 +81,19 @@ public class LoginPanel implements View {
             }
         });
     }
+
+    private void forceExit() {
+        System.exit(0);
+    }
+
+    private void exit() {
+        if ((JOptionPane.showConfirmDialog(MainFrame,
+                "Are you sure?",
+                "Exit",
+                JOptionPane.YES_NO_OPTION)
+                == JOptionPane.OK_OPTION)) {
+            System.exit(0);
+        }
+    }
+
 }

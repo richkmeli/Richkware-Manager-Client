@@ -3,9 +3,10 @@ package it.richkmeli.RMC.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.utils.Logger;
+import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jcrypto.Crypto;
+import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
 import it.richkmeli.jcrypto.exception.CryptoException;
-import it.richkmeli.jcrypto.KeyExchangePayload;
 import okhttp3.*;
 import org.json.JSONObject;
 
@@ -24,18 +25,19 @@ import java.util.Map;
  */
 public class Network {
 
-    private static OkHttpClient client;
-    private static Headers lastHeaders;
+    private String url;
+    private OkHttpClient client;
+    private Headers lastHeaders;
 
-    public Network(){
+    public Network() {
         client = new OkHttpClient();
         lastHeaders = null;
     }
 
-    public String GetURLContents(String sUrl) throws NetworkException {
+    public String GetURLContents(String parameter) throws NetworkException {
         URL url = null;
         try {
-            url = new URL(sUrl);
+            url = new URL(this.url + parameter);
         } catch (MalformedURLException e) {
             throw new NetworkException(e);
         }
@@ -43,7 +45,9 @@ public class Network {
         Response response;
         Request request;
 
-        if(lastHeaders!=null)
+        Logger.i("Request to: " + url);
+
+        if (lastHeaders != null)
             request = new Request.Builder()
                     .url(url)
                     .addHeader("Cookie", lastHeaders.get("Set-Cookie"))
@@ -61,13 +65,19 @@ public class Network {
             throw new NetworkException(e);
         }
 
-        lastHeaders = response.headers();
-
+        String responseString = null;
         try {
-            return response.body().string().trim();
+            responseString = response.body().string().trim();
         } catch (IOException e) {
             throw new NetworkException(e);
         }
+
+        Logger.i(responseString);
+
+        if (response.headers().get("Set-Cookie") != null)
+            lastHeaders = response.headers();
+
+        return responseString;
     }
 
 //    public String GetURLContents(String sUrl) throws NetworkException {
@@ -98,7 +108,8 @@ public class Network {
 //        return out;
 //    }
 
-    public String GetEncryptedURLContents(String sUrl) throws NetworkException {
+    public String GetEncryptedURLContents(String parameter) throws NetworkException {
+        String response = null;
         String out = null;
         try {
             KeyPair keyPair = Crypto.GetGeneratedKeyPairRSA();
@@ -106,23 +117,32 @@ public class Network {
             PrivateKey RSAprivateKeyClient = keyPair.getPrivate();
 
             // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
-            String url = null;
+            String parameterEncryption = parameter;
             try {
-                url = sUrl + "?encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
+                parameterEncryption = parameter + "?&encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
             } catch (GeneralSecurityException e) {
                 throw new NetworkException(e);
             }
 
-            out = GetURLContents(url);
-            Type listType = new TypeToken<KeyExchangePayload>() {
+            response = GetURLContents(parameterEncryption);
+
+            String messageResponse = ResponseParser.parseMessage(response);
+
+            Type listType = new TypeToken<KeyExchangePayloadCompat>() {
             }.getType();
             Gson gson = new Gson();
-            KeyExchangePayload keyExchangePayload = gson.fromJson(out, listType);
+            KeyExchangePayloadCompat keyExchangePayload = gson.fromJson(messageResponse, listType);
 
             SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
             String data = keyExchangePayload.getData();
 
-            out = Crypto.DecryptAES(data, AESsecretKey);
+            messageResponse = Crypto.DecryptAES(data, AESsecretKey);
+
+            //CREATE new JSON
+            JSONObject json = new JSONObject(response);
+            json.remove("message");
+            json.put("message", messageResponse);
+            out = json.toString();
         } catch (CryptoException e) {
             throw new NetworkException(e);
         }
@@ -230,6 +250,16 @@ public class Network {
 
         return response.toString();
     }
+
+
+    public void setURL(String protocol, String server, String port, String service) throws NetworkException {
+        try {
+            this.url = String.valueOf(new URL(protocol + "://" + server + ":" + port + "/" + service + "/"));
+        } catch (MalformedURLException e) {
+            throw new NetworkException(e);
+        }
+    }
+
 
 }
 
