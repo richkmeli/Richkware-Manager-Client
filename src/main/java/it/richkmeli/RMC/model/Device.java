@@ -2,22 +2,23 @@ package it.richkmeli.RMC.model;
 
 public class Device {
     private String name;
-    private String IP;
+    private String ip;
     private String serverPort;
     private String lastConnection;
     private String encryptionKey;
+    private String userAssociated;
 
-    public Device(String name, String iP, String serverPort, String lastConnection, String encryptionKey) {
-        super();
+    public Device(String name, String ip, String serverPort, String lastConnection, String encryptionKey, String userAssociated) {
         this.name = name;
-        IP = iP;
+        this.ip = ip;
         this.serverPort = serverPort;
         this.lastConnection = lastConnection;
         this.encryptionKey = encryptionKey;
+        this.userAssociated = userAssociated;
     }
 
-    public String getIP() {
-        return IP;
+    public String getIp() {
+        return ip;
     }
 
     public String getLastConnection() {
@@ -28,24 +29,20 @@ public class Device {
         return serverPort;
     }
 
-    public String getName() {
-        return name;
-    }
-
     public String getEncryptionKey() {
         return encryptionKey;
     }
 
-    public void setEncryptionKey(String encryptionKey) {
-        this.encryptionKey = encryptionKey;
+    public String getName() {
+        return name;
     }
 
     public void setServerPort(String serverPort) {
         this.serverPort = serverPort;
     }
 
-    public void setIP(String iP) {
-        IP = iP;
+    public void setIp(String iP) {
+        ip = iP;
     }
 
     public void setLastConnection(String lastConnection) {
@@ -56,4 +53,15 @@ public class Device {
         this.name = name;
     }
 
+    public void setEncryptionKey(String encryptionKey) {
+        this.encryptionKey = encryptionKey;
+    }
+
+    public String getUserAssociated() {
+        return userAssociated;
+    }
+
+    public void setUserAssociated(String userAssociated) {
+        this.userAssociated = userAssociated;
+    }
 }

@@ -102,9 +102,9 @@ public class MainPanel implements View {
                             } else {
                                 String response = null;
                                 if (forceEncryptionCommandCheckBox.isSelected()) {
-                                    response = app.getController().SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
                                 } else {
-                                    response = app.getController().SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
                                 }
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
@@ -125,7 +125,7 @@ public class MainPanel implements View {
                 if (deviceList.isEmpty() && directCheckBox.isEnabled()) {
                     try {
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "","");
 
                         SendCommandButton.setEnabled(true);
                         DisconnectDevice.setEnabled(true);
@@ -141,7 +141,7 @@ public class MainPanel implements View {
                             DisconnectDev();
                             errorPanel("ServerPort of this device is closed");
                         } else {
-                            addressOfDeviceTextField.setText(device.getIP() + ":" + device.getServerPort());
+                            addressOfDeviceTextField.setText(device.getIp() + ":" + device.getServerPort());
 
                             SendCommandButton.setEnabled(true);
                             DisconnectDevice.setEnabled(true);
