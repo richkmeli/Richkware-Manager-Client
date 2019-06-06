@@ -43,10 +43,6 @@ public class MainPanel implements View {
     private JCheckBox forceEncryptionCommandCheckBox;
     private JPanel SendCommandPanel;
     private JPanel ConnectToDevicePanel;
-    private JButton fileButton;
-    private JButton editButton;
-    private JButton viewButton;
-    private JButton helpButton;
 
     public void initialize() {
         MainFrame = new JFrame();
