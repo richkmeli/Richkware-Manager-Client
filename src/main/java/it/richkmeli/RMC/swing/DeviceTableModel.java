@@ -59,13 +59,15 @@ public class DeviceTableModel implements TableModel {
                 case 0:
                     return device.getName();
                 case 1:
-                    return device.getIP();
+                    return device.getIp();
                 case 2:
                     return device.getServerPort();
                 case 3:
                     return device.getLastConnection();
                 case 4:
                     return device.getEncryptionKey();
+                case 5:
+                    return device.getUserAssociated();
                 default:
                     throw new InvalidParameterException("Column Index not valid");
             }

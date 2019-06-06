@@ -43,10 +43,6 @@ public class MainPanel implements View {
     private JCheckBox forceEncryptionCommandCheckBox;
     private JPanel SendCommandPanel;
     private JPanel ConnectToDevicePanel;
-    private JButton fileButton;
-    private JButton editButton;
-    private JButton viewButton;
-    private JButton helpButton;
 
     public void initialize() {
         MainFrame = new JFrame();
@@ -102,9 +98,9 @@ public class MainPanel implements View {
                             } else {
                                 String response = null;
                                 if (forceEncryptionCommandCheckBox.isSelected()) {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
                                 } else {
-                                    response = app.SendCommand(device.getIP(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
+                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
                                 }
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
@@ -125,7 +121,7 @@ public class MainPanel implements View {
                 if (deviceList.isEmpty() && directCheckBox.isEnabled()) {
                     try {
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "","");
 
                         SendCommandButton.setEnabled(true);
                         DisconnectDevice.setEnabled(true);
@@ -141,7 +137,7 @@ public class MainPanel implements View {
                             DisconnectDev();
                             errorPanel("ServerPort of this device is closed");
                         } else {
-                            addressOfDeviceTextField.setText(device.getIP() + ":" + device.getServerPort());
+                            addressOfDeviceTextField.setText(device.getIp() + ":" + device.getServerPort());
 
                             SendCommandButton.setEnabled(true);
                             DisconnectDevice.setEnabled(true);
@@ -184,13 +180,6 @@ public class MainPanel implements View {
                 }
             }
         });
-        serverAddressTextField.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                serverAddressTextField.setText("");
-            }
-        });
         addressOfDeviceTextField.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -230,7 +219,7 @@ public class MainPanel implements View {
             progressBar1.setValue(0);
 
             // if encryption check box is selected, RMC uses encryption to refresh the list of devices
-            deviceList = app.RefreshDevice(serverAddressTextField.getText(), encryptionCheckBox.isSelected());
+            deviceList = app.getController().RefreshDevice(encryptionCheckBox.isSelected());
             progressBar1.setValue(50);
 
             InfoTable.setModel(new DeviceTableModel(deviceList));
