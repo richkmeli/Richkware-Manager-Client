@@ -91,23 +91,23 @@ public class MainPanel implements View {
                     if (device.getServerPort().compareTo("none") == 0) {
                         errorPanel("ServerPort of this device is closed");
                     } else {
-                        try {
-                            String command = commandToSendTextField.getText();
-                            if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
-                                errorPanel("Write the command to execute on device");
-                            } else {
-                                String response = null;
-                                if (forceEncryptionCommandCheckBox.isSelected()) {
-                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
-                                } else {
-                                    response = app.getController().SendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
-                                }
-                                DeviceResponseTextArea.append(response);
-                                DeviceResponseTextArea.setLineWrap(true);
-                            }
-                        } catch (ModelException e1) {
-                            errorPanel(e1.toString());
-                        }
+//                        try {
+//                            String command = commandToSendTextField.getText();
+//                            if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
+//                                errorPanel("Write the command to execute on device");
+//                            } else {
+//                                String response = null;
+//                                if (forceEncryptionCommandCheckBox.isSelected()) {
+//                                    response = app.getController().sendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), true, "[[1]]" + command);
+//                                } else {
+//                                    response = app.getController().sendCommand(device.getIp(), device.getServerPort(), device.getEncryptionKey(), false, "[[1]]" + command);
+//                                }
+//                                DeviceResponseTextArea.append(response);
+//                                DeviceResponseTextArea.setLineWrap(true);
+//                            }
+//                        } catch (ModelException e1) {
+//                            errorPanel(e1.toString());
+//                        }
                     }
                 } else {
                     errorPanel("Connect to device. Before to send command select a device");
@@ -219,7 +219,7 @@ public class MainPanel implements View {
             progressBar1.setValue(0);
 
             // if encryption check box is selected, RMC uses encryption to refresh the list of devices
-            deviceList = app.getController().RefreshDevice(encryptionCheckBox.isSelected());
+            deviceList = app.getController().refreshDevice(encryptionCheckBox.isSelected());
             progressBar1.setValue(50);
 
             InfoTable.setModel(new DeviceTableModel(deviceList));

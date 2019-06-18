@@ -110,6 +110,11 @@
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
+        <dependency>
+            <groupId>it.richkmeli.JCrypto</groupId>
+            <artifactId>JCrypto</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 
     </dependencies>
 

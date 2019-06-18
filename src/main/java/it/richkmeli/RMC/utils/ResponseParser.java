@@ -14,9 +14,9 @@ public class ResponseParser {
         return parseStatus(jsonResponse).equalsIgnoreCase("ok");
     }
 
-    public static String parseStatusCode(String jsonResponse) throws JSONException {
+    public static int parseStatusCode(String jsonResponse) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonResponse);
-        return jsonObject.getString("statusCode");
+        return jsonObject.getInt("statusCode");
     }
 
     public static String parseMessage(String jsonResponse) throws JSONException {

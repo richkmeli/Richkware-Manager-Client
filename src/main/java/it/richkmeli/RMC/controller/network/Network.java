@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.RMC.controller.network;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -7,18 +7,21 @@ import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jcrypto.Crypto;
 import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
 import it.richkmeli.jcrypto.exception.CryptoException;
-import okhttp3.*;
+import okhttp3.Headers;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 import org.json.JSONObject;
 
 import javax.crypto.SecretKey;
-import java.io.*;
+import java.io.IOException;
 import java.lang.reflect.Type;
-import java.net.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.util.Map;
 
 /**
  * Created by richk on 17/06/17.
@@ -158,100 +161,6 @@ public class Network {
 
     }*/
 
-    public String SendCommand(String ip, String port, String encryptionKey, boolean forceEncryption, String command) throws NetworkException {
-        StringBuilder response = new StringBuilder();
-
-        InetAddress receiverIP = null;
-        try {
-            receiverIP = InetAddress.getByName(ip);
-        } catch (UnknownHostException e) {
-            throw new NetworkException(e);
-        }
-        // client socket
-        Socket talkSocket = null;
-
-        PrintWriter talkBuffer;
-        BufferedReader bufferedReader;
-
-        try {
-            talkSocket = new Socket();
-            talkSocket.connect(new InetSocketAddress(receiverIP, Integer.parseInt(port)), 3000);
-        } catch (IOException e) {
-            throw new NetworkException(e);
-            //throw new IOException("Failed to open socket on " + port);
-        }
-
-        try {
-
-            talkBuffer =
-                    new PrintWriter(
-                            new BufferedWriter(
-                                    new OutputStreamWriter(
-                                            talkSocket.getOutputStream())), true);
-
-            bufferedReader =
-                    new BufferedReader(
-                            new InputStreamReader(
-                                    talkSocket.getInputStream()));
-
-
-            //boolean end = false;
-            //while (!end) {
-
-            bufferedReader.readLine(); // empty line
-            String s = bufferedReader.readLine();
-
-            if (s.compareTo("Encrypted Connection Established") == 0 || forceEncryption) {
-                // send command
-                command = Crypto.EncryptRC4(command, encryptionKey);
-                talkBuffer.println(command);
-                // receive response
-                s = bufferedReader.readLine();
-                s = Crypto.DecryptRC4(s, encryptionKey);
-
-                while (s.compareTo("error: Malformed command") != 0) {
-                    response.append(s).append("\n");
-                    talkBuffer.println();
-                    s = bufferedReader.readLine();
-                    s = Crypto.DecryptRC4(s, encryptionKey);
-                }
-                // disconnection TODO: implement the execution of more command inside a connection
-                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
-                talkBuffer.println(command);
-
-            } else if (s.compareTo("Connection Established") == 0) {
-                // send command
-                talkBuffer.println(command);
-                // receive response
-                s = bufferedReader.readLine();
-                while (s.compareTo("error: Malformed command") != 0) {
-                    response.append(s).append("\n");
-                    talkBuffer.println();
-                    s = bufferedReader.readLine();
-                }
-                // disconnection TODO: implement the execution of more command inside a connection
-                command = "[[0]]";
-                talkBuffer.println(command);
-            }
-
-            bufferedReader.close();
-            talkBuffer.close();
-            talkSocket.close();
-
-        } catch (IOException e) {
-            try {
-                talkSocket.close();
-            } catch (IOException e1) {
-                throw new NetworkException(e);
-            }
-            throw new NetworkException(e);
-            //throw new IOException("Exception of communication buffer");
-        }
-
-        return response.toString();
-    }
-
-
     public void setURL(String protocol, String server, String port, String service) throws NetworkException {
         try {
             this.url = String.valueOf(new URL(protocol + "://" + server + ":" + port + "/" + service + "/"));
@@ -260,6 +169,10 @@ public class Network {
         }
     }
 
+    public void connect(String ip, String port, String encryptionKey, boolean forceEncryption, SocketCallback callback) {
+        SocketThread socketThread = new SocketThread(ip, port, encryptionKey, forceEncryption, callback);
+        socketThread.start();
+    }
 
 }
 

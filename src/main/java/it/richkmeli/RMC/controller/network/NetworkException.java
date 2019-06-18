@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.RMC.controller.network;
 
 import it.richkmeli.RMC.model.ModelException;
 
