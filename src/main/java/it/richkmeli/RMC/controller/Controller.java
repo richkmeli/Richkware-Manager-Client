@@ -101,18 +101,18 @@ public class Controller {
 
     public void connect(Device device, boolean forceEncryption, PanelCallback callback) {
         devicesMap = new HashMap<>();
-        connectDevice(device, forceEncryption, callback);
+        openSocketDevice(device, forceEncryption, callback);
     }
 
     public void connect(List<Device> devices, boolean forceEncryption, PanelCallback callback) {
         devicesMap = new HashMap<>();
         for (Device device : devices) {
-            connectDevice(device, forceEncryption, callback);
+            openSocketDevice(device, forceEncryption, callback);
         }
     }
 
-    private void connectDevice(Device device, boolean forceEncryption, PanelCallback callback) {
-        network.connect(device.getIp(), device.getServerPort(), device.getEncryptionKey(), forceEncryption, new SocketCallback() {
+    private void openSocketDevice(Device device, boolean forceEncryption, PanelCallback callback) {
+        network.openSocket(device.getIp(), device.getServerPort(), device.getEncryptionKey(), forceEncryption, new SocketCallback() {
             @Override
             public void onSuccess(SocketThread socketThread) {
                 Logger.i(device.getIp() + ":" + device.getServerPort() + " - Connesso");
@@ -135,6 +135,44 @@ public class Controller {
         }
     }
 
+    public void reverseCommand(Device device, String command) {
+        try {
+            network.reverseCommand(device, command);
+        } catch (NetworkException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void reverseCommand(List<Device> devices, String command) {
+        for (Device device : devices)
+            reverseCommand(device, command);
+    }
+
+    public String reverseCommandResponse(Device device) {
+        String result = null;
+        try {
+            Logger.i("Request reverseCommandResponse " + " " + network.toString());
+            result = network.GetURLContents("command?data0=" + device.getName() + "&data1=client");
+        } catch (NetworkException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    public String login(){
+        String jsonResponse = null;
+        return jsonResponse;
+    }
 
 }
+
+//    public String checkResponse(Device device){
+//        String result = "";
+//        try{
+//            Logger.i("I'm checking for response...");
+////            result = network.GetURLContents("comm")
+//        } catch (NetworkException e) {
+//            e.printStackTrace();
+//        }
+//
+//    }

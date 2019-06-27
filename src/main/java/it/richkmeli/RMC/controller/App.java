@@ -1,6 +1,7 @@
 package it.richkmeli.RMC.controller;
 
 import it.richkmeli.RMC.swing.MainJFrame;
+import it.richkmeli.RMC.swing.RichkwarePanel;
 import it.richkmeli.RMC.view.View;
 
 /**
@@ -12,7 +13,7 @@ public class App implements Runnable {
 
     public void run() {
         LookAndFeel.initLookAndFeel("System", "Metal");
-        view = new MainJFrame(this);
+        view = new RichkwarePanel(this);
         controller = new Controller();
     }
 
