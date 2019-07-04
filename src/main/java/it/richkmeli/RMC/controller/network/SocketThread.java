@@ -92,17 +92,17 @@ public class SocketThread extends Thread {
             if (forceEncryption) {
                 Logger.i("I'm in SockerThread, sendCommand. Encryption.");
                 // send command
-                command = Crypto.EncryptRC4(command, encryptionKey);
+                command = Crypto.encryptRC4(command, encryptionKey);
                 outBuffer.println(command);
                 // receive response
                 s = inBuffer.readLine();
-                s = Crypto.DecryptRC4(s, encryptionKey);
+                s = Crypto.decryptRC4(s, encryptionKey);
 
                 while (s.compareTo("error: Malformed command") != 0) {
                     response.append(s).append("\n");
                     outBuffer.println();
                     s = inBuffer.readLine();
-                    s = Crypto.DecryptRC4(s, encryptionKey);
+                    s = Crypto.decryptRC4(s, encryptionKey);
                 }
 //                // disconnection
 //                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
@@ -134,7 +134,7 @@ public class SocketThread extends Thread {
         String s;
         if (forceEncryption) {
             // disconnection
-            outBuffer.println(Crypto.EncryptRC4("[[0]]", encryptionKey));
+            outBuffer.println(Crypto.encryptRC4("[[0]]", encryptionKey));
         } else {
             // disconnection
             outBuffer.println("[[0]]");
