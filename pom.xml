@@ -96,18 +96,6 @@
             <version>2.8.1</version>
         </dependency>
         <dependency>
-            <groupId>com.github.richkmeli</groupId>
-            <!--<groupId>it.richkmeli.JCrypto</groupId>-->
-            <artifactId>JCrypto</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.richkmeli</groupId>
-            <artifactId>JFramework</artifactId>
-            <version>1.0.3</version>
-        </dependency>
-
-        <dependency>
             <groupId>com.intellij</groupId>
             <artifactId>forms_rt</artifactId>
             <version>7.0.3</version>
