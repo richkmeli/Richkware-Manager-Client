@@ -1,6 +1,5 @@
 package it.richkmeli.RMC.controller;
 
-import it.richkmeli.RMC.swing.MainJFrame;
 import it.richkmeli.RMC.swing.RichkwarePanel;
 import it.richkmeli.RMC.view.View;
 

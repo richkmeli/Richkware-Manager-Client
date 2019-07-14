@@ -118,7 +118,7 @@ public class RichkwarePanel implements View {
                         errorField.setText(e.getMessage());
                     }
 
-                    app.getController().login(email, password, false, new RichkwareCallback() {
+                    app.getController().login(email, password, new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
                             errorField.setText(" ");

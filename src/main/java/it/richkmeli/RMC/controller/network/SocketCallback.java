@@ -4,6 +4,6 @@ public interface SocketCallback {
 
     public void onSuccess(SocketThread socketThread);
 
-    public void onFailure(String error);
+    public void onFailure(Exception e);
 
 }

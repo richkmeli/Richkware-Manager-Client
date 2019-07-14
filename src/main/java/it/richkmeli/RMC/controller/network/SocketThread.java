@@ -1,5 +1,6 @@
 package it.richkmeli.RMC.controller.network;
 
+import it.richkmeli.RMC.swing.RichkwareCallback;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.jcrypto.Crypto;
 
@@ -21,12 +22,16 @@ public class SocketThread extends Thread {
     private PrintWriter outBuffer;
     private BufferedReader inBuffer;
 
+    private boolean open;
+
     public SocketThread(String ip, String port, String encryptionKey, boolean forceEncryption, SocketCallback callback) {
         this.ip = ip;
         this.port = port;
         this.encryptionKey = encryptionKey;
         this.forceEncryption = forceEncryption;
         this.callback = callback;
+
+        open = true;
     }
 
     @Override
@@ -34,10 +39,10 @@ public class SocketThread extends Thread {
         super.run();
         try {
             openSocket();
-            while (true) ;
+            while (open) ;
         } catch (NetworkException e) {
             Logger.e(e.getMessage());
-            callback.onFailure(e.getMessage());
+            callback.onFailure(e);
         }
     }
 
@@ -77,14 +82,14 @@ public class SocketThread extends Thread {
             } else if (s.compareTo("Connection Established") == 0) {
                 callback.onSuccess(this);
             } else {
-                callback.onFailure(s);
+                callback.onFailure(new NetworkException(new Exception(s)));
             }
         } catch (IOException e) {
             throw new NetworkException(e);
         }
     }
 
-    public void sendCommand(String command, CommandCallback callback) {
+    public void sendCommand(String command, RichkwareCallback callback) {
         command = "[[1]]" + command;
         StringBuilder response = new StringBuilder();
         try {
@@ -131,7 +136,6 @@ public class SocketThread extends Thread {
     }
 
     public void disconnect() {
-        String s;
         if (forceEncryption) {
             // disconnection
             outBuffer.println(Crypto.encryptRC4("[[0]]", encryptionKey));
@@ -139,6 +143,7 @@ public class SocketThread extends Thread {
             // disconnection
             outBuffer.println("[[0]]");
         }
+        open = false;
     }
 
 }
