@@ -8,19 +8,22 @@ import it.richkmeli.RMC.model.ModelException;
 import it.richkmeli.RMC.swing.PanelCallback;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
+import it.richkmeli.jcrypto.Crypto;
+import org.json.JSONObject;
 
+import javax.swing.*;
+import java.io.File;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Controller {
 
     private Network network;
+    private Crypto.Client cryptoClient;
 
     public Controller() {
         network = new Network();
+        cryptoClient = new Crypto.Client();
     }
 
     public Network getNetwork() {
@@ -59,7 +62,12 @@ public class Controller {
     public String login(String email, String password) {
         String result = null;
         try {
-            result = network.GetURLContents("LogIn?email=" + email + "&password=" + password);
+            JSONObject payload = new JSONObject();
+            payload.put("email",email);
+            payload.put("password",password);
+
+            result = network.GetEncryptedURLContents(cryptoClient,"LogIn", payload.toString(), false);
+            //result = network.GetURLContents("LogIn?email=" + email + "&password=" + password);
         } catch (NetworkException e) {
             e.printStackTrace();
         }
@@ -89,7 +97,7 @@ public class Controller {
     private String deviceList(boolean encryption) throws NetworkException {
         String result = null;
         if (encryption) {
-            result = network.GetEncryptedURLContents("devicesList");
+            result = network.GetEncryptedURLContents(cryptoClient,"devicesList", "", true);
         } else {
             result = network.GetURLContents("devicesList");
         }

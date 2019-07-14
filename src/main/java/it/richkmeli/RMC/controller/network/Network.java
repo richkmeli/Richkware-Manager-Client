@@ -6,6 +6,7 @@ import it.richkmeli.RMC.model.Device;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jcrypto.Crypto;
+import it.richkmeli.jcrypto.CryptoCompat;
 import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
 import it.richkmeli.jcrypto.exception.CryptoException;
 import okhttp3.*;
@@ -112,18 +113,45 @@ public class Network {
 //        return out;
 //    }
 
-    public String GetEncryptedURLContents(String parameter) throws NetworkException {
+    public String GetEncryptedURLContents(Crypto.Client cryptoClient, String servlet, String data, boolean decryptResponse) throws NetworkException {
+        String response = null;
+        String out = null;
+        // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
+        String encryptionParametes = "encryption=true";
+        data = "data=" + cryptoClient.encrypt(data);
+        encryptionParametes = servlet + "?" + encryptionParametes + "&" + data;
+
+        response = GetURLContents(encryptionParametes);
+
+
+        //CREATE new JSON
+        JSONObject json = new JSONObject(response);
+
+        String messageResponse = json.getString("message");
+        if(decryptResponse) {
+            messageResponse = cryptoClient.decrypt(messageResponse);
+        }
+
+        json.remove("message");
+        json.put("message", messageResponse);
+        out = json.toString();
+
+
+        return out;
+    }
+
+    public String GetEncryptedURLContentsCompat(String parameter) throws NetworkException {
         String response = null;
         String out = null;
         try {
-            KeyPair keyPair = Crypto.GetGeneratedKeyPairRSA();
+            KeyPair keyPair = CryptoCompat.getGeneratedKeyPairRSA();
             PublicKey RSApublicKeyClient = keyPair.getPublic();
             PrivateKey RSAprivateKeyClient = keyPair.getPrivate();
 
             // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
             String parameterEncryption = parameter;
             try {
-                parameterEncryption = parameter + "?&encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
+                parameterEncryption = parameter + "?&encryption=true&Kpub=" + CryptoCompat.savePublicKey(RSApublicKeyClient);
             } catch (GeneralSecurityException e) {
                 throw new NetworkException(e);
             }
@@ -137,10 +165,10 @@ public class Network {
             Gson gson = new Gson();
             KeyExchangePayloadCompat keyExchangePayload = gson.fromJson(messageResponse, listType);
 
-            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
+            SecretKey AESsecretKey = CryptoCompat.getAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
             String data = keyExchangePayload.getData();
 
-            messageResponse = Crypto.DecryptAES(data, AESsecretKey);
+            messageResponse = CryptoCompat.decryptRC4(data, new String(AESsecretKey.getEncoded()));
 
             //CREATE new JSON
             JSONObject json = new JSONObject(response);
