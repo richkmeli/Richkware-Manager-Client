@@ -77,6 +77,7 @@ public class RichkwarePanel implements View {
     private JTextArea CommandsTextAreaReverse;
     private JPanel ReverseCmmandsPanel;
     private JButton ReceiveResponseButtonReverse;
+    private JLabel encStateValue;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -117,6 +118,7 @@ public class RichkwarePanel implements View {
                     } catch (NetworkException e) {
                         errorField.setText(e.getMessage());
                     }
+                    app.getController().initSecureConnection("RMC_001", encStateValue);
 
                     app.getController().login(email, password, new RichkwareCallback() {
                         @Override

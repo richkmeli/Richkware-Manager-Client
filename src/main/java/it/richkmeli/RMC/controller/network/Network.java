@@ -295,5 +295,51 @@ public class Network {
             }
         });
     }
+
+    public String GetRequestSync(String parameter) throws NetworkException {
+        URL url = null;
+        try {
+            url = new URL(this.url + parameter);
+        } catch (MalformedURLException e) {
+            throw new NetworkException(e);
+        }
+
+        Response response;
+        Request request;
+
+        Logger.i("Request to: " + url);
+
+        if (lastHeaders != null)
+            request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Cookie", lastHeaders.get("Set-Cookie"))
+                    .get()
+                    .build();
+        else
+            request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+
+        try {
+            response = client.newCall(request).execute();
+        } catch (IOException e) {
+            throw new NetworkException(e);
+        }
+
+        String responseString = null;
+        try {
+            responseString = response.body().string().trim();
+        } catch (IOException e) {
+            throw new NetworkException(e);
+        }
+
+        Logger.i(responseString);
+
+        if (response.headers().get("Set-Cookie") != null)
+            lastHeaders = response.headers();
+
+        return responseString;
+    }
 }
 

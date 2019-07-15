@@ -61,7 +61,7 @@
 
     <dependencies>
         <dependency>
-            <!--<groupId>it.richkmeli.jcrypto</groupId>-->
+<!--            <groupId>it.richkmeli.jcrypto</groupId>-->
             <groupId>com.github.richkmeli</groupId>
             <artifactId>JCrypto</artifactId>
             <version>1.1.0</version>

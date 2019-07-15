@@ -3,17 +3,21 @@ package it.richkmeli.RMC.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.controller.network.Network;
+import it.richkmeli.RMC.controller.network.NetworkException;
 import it.richkmeli.RMC.controller.network.SocketCallback;
 import it.richkmeli.RMC.controller.network.SocketThread;
 import it.richkmeli.RMC.model.Device;
 import it.richkmeli.RMC.model.ModelException;
 import it.richkmeli.RMC.swing.ListCallback;
 import it.richkmeli.RMC.swing.RichkwareCallback;
+import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jcrypto.Crypto;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.swing.*;
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -281,4 +285,73 @@ public class Controller {
         }
     }
 
+
+    //todo rimuovere dipendenza da swing, ma fare barra con stato del jcrypto
+    public void initSecureConnection(String clientID, JLabel encStateValue) {
+        Logger.i("initSecureConnection...");
+        //TODO verificare che non si leghi ad un unico server, altrimenti diverso file TXT, nome server nel file TXT
+        // re-init to allow a connection to a different server
+        cryptoClient = new Crypto.Client();
+
+        File secureDataClient = new File("TESTsecureDataClient.txt");
+        String clientKey = "testkeyClient";
+        int maxAttempts = 5;
+
+        String clientResponse = "";
+        String serverResponse = "";
+        String clientPayload = "";
+        try {
+
+            int clientState = 0;
+            int i = 0;
+            do {
+                i++;
+
+                clientResponse = cryptoClient.init(secureDataClient, clientKey, serverResponse);
+                clientState = new JSONObject(clientResponse).getInt("state");
+                clientPayload = new JSONObject(clientResponse).getString("payload");
+
+                Logger.i("clientState: " + clientState);
+                encStateValue.setText(clientState + "");
+                // do not contact the server if it is in the last state
+                // TODO non commentato per caricare crypto server in session server, solo li c'è init
+                //if (clientState == 3) break;
+                // connection
+
+                // TODO CAMBIA NEI NUOVI METODI
+                serverResponse = network.GetRequestSync("secureConnection?clientID=" + clientID + "&data=" + clientPayload);
+
+
+//                JSONObject jsonObject = new JSONObject();
+//                jsonObject.put("clientID", clientID);
+//                jsonObject.put("data", clientPayload);
+//
+//                network.getRequest("secureConnection", jsonObject.toString(), cryptoClient, new NetworkCallback() {
+//                    @Override
+//                    public void onSuccess(String response) {
+//                        if (ResponseParser.isStatusOK(response))
+//                            callback.onSuccess(ResponseParser.parseMessage(response));
+//                        else
+//                            callback.onFailure(ResponseParser.parseMessage(response));
+//
+//                        serverResponse = response;
+//                    }
+//
+//                    @Override
+//                    public void onFailure(Exception e) {
+//                        callback.onFailure(e.getMessage());
+//                    }
+//                });
+
+
+                // contatta il server solo una volta
+                if (clientState == 3) break;
+                //todo prevedi reset nel caso si cancelli il file
+
+            } while ((i < maxAttempts) /*&& (clientState != 3)*/);
+        } catch (NetworkException e) {
+            e.printStackTrace();
+        }
+        Logger.i("initSecureConnection done");
+    }
 }
