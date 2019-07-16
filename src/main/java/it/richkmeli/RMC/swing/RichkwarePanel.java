@@ -78,6 +78,7 @@ public class RichkwarePanel implements View {
     private JPanel ReverseCmmandsPanel;
     private JButton ReceiveResponseButtonReverse;
     private JLabel encStateValue;
+    private JButton deleteCryptoStateButton;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -144,6 +145,13 @@ public class RichkwarePanel implements View {
                 }
             });
         }
+
+        deleteCryptoStateButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                app.getController().deleteCryptoState();
+            }
+        });
     }
 
     private void loadDevicesPanel() {
@@ -334,7 +342,7 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     if (directCheckBox.isSelected()) { //Direct command to selected devices from table
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1, ipport.length()), "", "", "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1), "", "", "");
                         app.getController().openSocket(device, forceEncryptionCommandCheckBox.isSelected(), new RichkwareCallback() {
                             @Override
                             public void onSuccess(String response) {
@@ -448,7 +456,7 @@ public class RichkwarePanel implements View {
                     app.getController().devicesList(encryptionCheckBox.isSelected(), new ListCallback() {
                         @Override
                         public void onSuccess(List<Device> response) {
-                            deviceList = (List<Device>) response;
+                            deviceList = response;
                             progressBar1.setValue(20);
                             InfoTable.setModel(new DeviceTableModel(deviceList));
                             progressBar1.setValue(40);
@@ -569,6 +577,10 @@ public class RichkwarePanel implements View {
         DisconnectDeviceDirect.setEnabled(true);
         ConnectDevice.setEnabled(false);
         ConnectDeviceDirect.setEnabled(false);
+    }
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
     private enum Connect {

@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 public class ResponseParser {
 
-    public static String parseStatus(String jsonResponse)  throws JSONException {
+    public static String parseStatus(String jsonResponse) throws JSONException {
         JSONObject jsonObject = new JSONObject(jsonResponse);
         return jsonObject.getString("status");
     }

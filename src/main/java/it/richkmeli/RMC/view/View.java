@@ -5,6 +5,6 @@ package it.richkmeli.RMC.view;
  */
 
 public interface View {
-    public void initialize();
+    void initialize();
 
 }

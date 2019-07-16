@@ -6,8 +6,8 @@ import java.util.List;
 
 public interface ListCallback {
 
-    public void onSuccess(List<Device> response);
+    void onSuccess(List<Device> response);
 
-    public void onFailure(String response);
+    void onFailure(String response);
 
 }

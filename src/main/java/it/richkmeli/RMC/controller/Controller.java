@@ -285,6 +285,9 @@ public class Controller {
         }
     }
 
+    public void deleteCryptoState() {
+        cryptoClient.reset();
+    }
 
     //todo rimuovere dipendenza da swing, ma fare barra con stato del jcrypto
     public void initSecureConnection(String clientID, JLabel encStateValue) {

@@ -4,8 +4,8 @@ import java.util.Map;
 
 public interface ReverseCommandCallback {
 
-    public void onSuccess();
+    void onSuccess();
 
-    public void onFailure(Map<String, String> responseMap);
+    void onFailure(Map<String, String> responseMap);
 
 }
