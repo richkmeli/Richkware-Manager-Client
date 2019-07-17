@@ -68,8 +68,14 @@ public class Network {
             } catch (MalformedURLException e) {
                 callback.onFailure(new NetworkException(e));
             }
-            Logger.i("Get request to: " + url + " :\"" + cryptoClient.encrypt(params) + "\"");
-            parameters = new StringBuilder("?encryption=true&data=" + cryptoClient.encrypt(params));
+
+            jsonParametersString = jsonParametersString == null ? "" : jsonParametersString;
+            //String encryptedParameters = cryptoClient.encrypt(params);
+            // when encryption is enabled they are passed as JSON
+            String encryptedParameters = cryptoClient.encrypt(jsonParametersString);
+
+            Logger.i("Get request to: " + url + " :\"" + encryptedParameters + "\"");
+            parameters = new StringBuilder("?encryption=true&data=" + encryptedParameters);
         }
 
 //        URL url = null;
