@@ -4,9 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
-import it.richkmeli.jcrypto.Crypto;
-import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
-import it.richkmeli.jcrypto.exception.CryptoException;
+import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.crypto.CryptoCompat;
+import it.richkmeli.jframework.crypto.KeyExchangePayloadCompat;
+import it.richkmeli.jframework.crypto.exception.CryptoException;
 import okhttp3.*;
 import org.json.JSONObject;
 
@@ -112,14 +113,14 @@ public class Network {
         String response = null;
         String out = null;
         try {
-            KeyPair keyPair = Crypto.GetGeneratedKeyPairRSA();
+            KeyPair keyPair = CryptoCompat.getGeneratedKeyPairRSA();
             PublicKey RSApublicKeyClient = keyPair.getPublic();
             PrivateKey RSAprivateKeyClient = keyPair.getPrivate();
 
             // URL editing: appending to the URL a GET parameter (HTTP), to enable encryption server-side.
             String parameterEncryption = parameter;
             try {
-                parameterEncryption = parameter + "?&encryption=true&Kpub=" + Crypto.savePublicKey(RSApublicKeyClient);
+                parameterEncryption = parameter + "?&encryption=true&Kpub=" + CryptoCompat.savePublicKey(RSApublicKeyClient);
             } catch (GeneralSecurityException e) {
                 throw new NetworkException(e);
             }
@@ -133,10 +134,10 @@ public class Network {
             Gson gson = new Gson();
             KeyExchangePayloadCompat keyExchangePayload = gson.fromJson(messageResponse, listType);
 
-            SecretKey AESsecretKey = Crypto.GetAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
+            SecretKey AESsecretKey = CryptoCompat.getAESKeyFromKeyExchange(keyExchangePayload, RSAprivateKeyClient);
             String data = keyExchangePayload.getData();
 
-            messageResponse = Crypto.DecryptAES(data, AESsecretKey);
+            messageResponse = CryptoCompat.decryptAES(data, String.valueOf(AESsecretKey));
 
             //CREATE new JSON
             JSONObject json = new JSONObject(response);
@@ -203,20 +204,20 @@ public class Network {
 
             if (s.compareTo("Encrypted Connection Established") == 0 || forceEncryption) {
                 // send command
-                command = Crypto.EncryptRC4(command, encryptionKey);
+                command = Crypto.encryptRC4(command, encryptionKey);
                 talkBuffer.println(command);
                 // receive response
                 s = bufferedReader.readLine();
-                s = Crypto.DecryptRC4(s, encryptionKey);
+                s = Crypto.decryptRC4(s, encryptionKey);
 
                 while (s.compareTo("error: Malformed command") != 0) {
                     response.append(s).append("\n");
                     talkBuffer.println();
                     s = bufferedReader.readLine();
-                    s = Crypto.DecryptRC4(s, encryptionKey);
+                    s = Crypto.decryptRC4(s, encryptionKey);
                 }
                 // disconnection TODO: implement the execution of more command inside a connection
-                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
+                command = Crypto.encryptRC4("[[0]]", encryptionKey);
                 talkBuffer.println(command);
 
             } else if (s.compareTo("Connection Established") == 0) {

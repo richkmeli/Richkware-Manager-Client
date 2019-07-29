@@ -55,7 +55,7 @@
                 </configuration>
             </plugin>
 
-            <plugin>
+           <!-- <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>ideauidesigner-maven-plugin</artifactId>
                 <version>1.0-beta-1</version>
@@ -73,7 +73,7 @@
                     <failOnError>true</failOnError>
                 </configuration>
             </plugin>
-
+-->
         </plugins>
     </build>
 
@@ -85,13 +85,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.richkmeli</groupId>
-            <artifactId>JCrypto</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>com.github.richkmeli</groupId>
             <artifactId>JFramework</artifactId>
-            <version>1.0.4</version>
+            <version>1.1.0</version>
         </dependency>
         <dependency>
             <groupId>com.intellij</groupId>
