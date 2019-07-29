@@ -5,10 +5,10 @@ import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.controller.NetworkCallback;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
-import it.richkmeli.jcrypto.Crypto;
-import it.richkmeli.jcrypto.CryptoCompat;
-import it.richkmeli.jcrypto.KeyExchangePayloadCompat;
-import it.richkmeli.jcrypto.exception.CryptoException;
+import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.crypto.CryptoCompat;
+import it.richkmeli.jframework.crypto.KeyExchangePayloadCompat;
+import it.richkmeli.jframework.crypto.exception.CryptoException;
 import okhttp3.*;
 import org.json.JSONObject;
 

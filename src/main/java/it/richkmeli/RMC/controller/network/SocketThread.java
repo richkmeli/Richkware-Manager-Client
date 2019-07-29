@@ -2,7 +2,7 @@ package it.richkmeli.RMC.controller.network;
 
 import it.richkmeli.RMC.swing.RichkwareCallback;
 import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.jcrypto.Crypto;
+import it.richkmeli.jframework.crypto.Crypto;
 
 import java.io.*;
 import java.net.InetAddress;

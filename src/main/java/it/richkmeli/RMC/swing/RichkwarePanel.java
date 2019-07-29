@@ -128,7 +128,7 @@ public class RichkwarePanel implements View {
                             deleteCryptoStateButton.setVisible(true);
                             establishSecureConnectionButton.setVisible(false);
                             credentialPanel.setVisible(true);
-                            for(Component comp : urlPanel.getComponents())
+                            for (Component comp : urlPanel.getComponents())
                                 comp.setEnabled(false);
                         }
 

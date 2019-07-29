@@ -3,7 +3,6 @@ package it.richkmeli.RMC.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.RMC.controller.network.Network;
-import it.richkmeli.RMC.controller.network.NetworkException;
 import it.richkmeli.RMC.controller.network.SocketCallback;
 import it.richkmeli.RMC.controller.network.SocketThread;
 import it.richkmeli.RMC.model.Device;
@@ -12,11 +11,10 @@ import it.richkmeli.RMC.swing.ListCallback;
 import it.richkmeli.RMC.swing.RichkwareCallback;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
-import it.richkmeli.jcrypto.Crypto;
+import it.richkmeli.jframework.crypto.Crypto;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.swing.*;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -49,7 +47,7 @@ public class Controller {
 
         JSONObject payload = new JSONObject();
         payload.put("email", email);
-        payload.put("password", password);
+        payload.put("password", Crypto.hashPassword(password, true));
 
         network.getRequest("LogIn", payload.toString(), cryptoClient, new NetworkCallback() {
             @Override
