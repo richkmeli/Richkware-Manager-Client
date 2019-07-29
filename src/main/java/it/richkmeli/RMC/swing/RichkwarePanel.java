@@ -77,8 +77,10 @@ public class RichkwarePanel implements View {
     private JTextArea CommandsTextAreaReverse;
     private JPanel ReverseCmmandsPanel;
     private JButton ReceiveResponseButtonReverse;
-    private JLabel encStateValue;
     private JButton deleteCryptoStateButton;
+    private JButton establishSecureConnectionButton;
+    private JPanel credentialPanel;
+    private JPanel urlPanel;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -108,19 +110,44 @@ public class RichkwarePanel implements View {
         DIRECT_CONNECT.setVisible(false);
         AFTER_LOGIN.setVisible(false);
         MainFrame.pack();
+
+        credentialPanel.setVisible(false);
+        deleteCryptoStateButton.setVisible(false);
+        if (establishSecureConnectionButton.getActionListeners().length == 0) {
+            establishSecureConnectionButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    try {
+                        app.getController().getNetwork().setURL(protocoloField.getText(), serverField.getText(), portField.getText(), serviceField.getText());
+                    } catch (NetworkException ex) {
+                        ex.printStackTrace();
+                    }
+                    app.getController().initSecureConnection(new RichkwareCallback() {
+                        @Override
+                        public void onSuccess(String response) {
+                            deleteCryptoStateButton.setVisible(true);
+                            establishSecureConnectionButton.setVisible(false);
+                            credentialPanel.setVisible(true);
+                            for(Component comp : urlPanel.getComponents())
+                                comp.setEnabled(false);
+                        }
+
+                        @Override
+                        public void onFailure(String response) {
+                            errorField.setText(response);
+                        }
+                    });
+
+                }
+            });
+        }
+
         if (loginButton.getActionListeners().length == 0) {
             loginButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent event) {
                     String email = emailField.getText();
                     String password = passwordField.getText();
-                    try {
-                        app.getController().getNetwork().setURL(protocoloField.getText(), serverField.getText(), portField.getText(), serviceField.getText());
-                    } catch (NetworkException e) {
-                        errorField.setText(e.getMessage());
-                    }
-                    app.getController().initSecureConnection("RMC_001", encStateValue);
-
                     app.getController().login(email, password, new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
@@ -244,9 +271,11 @@ public class RichkwarePanel implements View {
                     if (devicesCount == 1) {
                         clearTable();
                         app.getController().connectDevice(getSelectedDevice());
+                        enableInput();
                     } else if (devicesCount > 1) {
                         clearTable();
                         app.getController().connectDevice(getSelectedDevices());
+                        enableInput();
                     } else {
                         errorPanel("Select a device");
                     }
@@ -277,6 +306,7 @@ public class RichkwarePanel implements View {
                 @Override
                 public void actionPerformed(ActionEvent actionEvent) {
                     clearTable();
+                    disableInput(Connect.REVERSE);
                 }
             });
         }
@@ -303,7 +333,6 @@ public class RichkwarePanel implements View {
     private void errorPanel(String err) {
         JOptionPane.showMessageDialog(MainFrame, err, "Error", JOptionPane.ERROR_MESSAGE);
     }
-
 
     private void connectPanel(JButton SendCommandButton, JTextField commandToSendTextField, JTextArea DeviceResponseTextArea, JButton ConnectDevice, JCheckBox directCheckBox, JTextField addressOfDeviceTextField, JCheckBox forceEncryptionCommandCheckBox, JButton DisconnectDevice, Connect connetionType) {
         devices = new ArrayList<>();
@@ -537,8 +566,10 @@ public class RichkwarePanel implements View {
         Logger.i("disable");
         commandToSendTextField.setEnabled(false);
         commandToSendTextFieldDirect.setEnabled(false);
+        CommandsTextAreaReverse.setEnabled(false);
         directCheckBox.setEnabled(true);
         directCheckBoxDirect.setEnabled(true);
+        forceEncryptionCommandCheckBoxReverse.setEnabled(true);
         if (connectionType == Connect.DIRECT) {
             directCheckBox.setEnabled(false);
             directCheckBoxDirect.setEnabled(false);
@@ -557,30 +588,34 @@ public class RichkwarePanel implements View {
 
         SendCommandButton.setEnabled(false);
         SendCommandButtonDirect.setEnabled(false);
+        SendCommandButtonReverse.setEnabled(false);
         DisconnectDevice.setEnabled(false);
         DisconnectDeviceDirect.setEnabled(false);
+        DisconnectDeviceReverse.setEnabled(false);
         ConnectDevice.setEnabled(true);
         ConnectDeviceDirect.setEnabled(true);
+        ConnectDeviceReverse.setEnabled(true);
     }
 
     private void enableInput() {
         Logger.i("enable");
         commandToSendTextField.setEnabled(true);
         commandToSendTextFieldDirect.setEnabled(true);
+        CommandsTextAreaReverse.setEnabled(true);
         directCheckBox.setEnabled(false);
         directCheckBoxDirect.setEnabled(false);
+        forceEncryptionCommandCheckBoxReverse.setEnabled(false);
         addressOfDeviceTextField.setEnabled(false);
         addressOfDeviceTextFieldDirect.setEnabled(false);
         SendCommandButton.setEnabled(true);
         SendCommandButtonDirect.setEnabled(true);
+        SendCommandButtonReverse.setEnabled(true);
         DisconnectDevice.setEnabled(true);
         DisconnectDeviceDirect.setEnabled(true);
+        DisconnectDeviceReverse.setEnabled(true);
         ConnectDevice.setEnabled(false);
         ConnectDeviceDirect.setEnabled(false);
-    }
-
-    private void createUIComponents() {
-        // TODO: place custom component creation code here
+        ConnectDeviceReverse.setEnabled(false);
     }
 
     private enum Connect {

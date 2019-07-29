@@ -141,6 +141,57 @@ public class Network {
         });
     }
 
+    public void getRequestCompat(String servlet, String jsonParametersString, NetworkCallback callback) {
+        StringBuilder parameters = new StringBuilder("?");
+        if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
+            JSONObject jsonParameters = new JSONObject(jsonParametersString);
+            for (String key : jsonParameters.keySet()) {
+                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+            }
+        }
+
+        URL url = null;
+        try {
+            url = new URL(this.url + servlet + parameters);
+        } catch (MalformedURLException e) {
+            callback.onFailure(new NetworkException(e));
+        }
+
+        Request request;
+
+        Logger.i("Get request to: " + url);
+
+        if (lastHeaders != null)
+            request = new Request.Builder()
+                    .url(url)
+                    .addHeader("Cookie", lastHeaders.get("Set-Cookie"))
+                    .get()
+                    .build();
+        else
+            request = new Request.Builder()
+                    .url(url)
+                    .get()
+                    .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String jsonResponse = response.body().string().trim();
+                if (response.headers().get("Set-Cookie") != null)
+                    lastHeaders = response.headers();
+
+                Logger.i("Get response: " + jsonResponse);
+
+                callback.onSuccess(jsonResponse);
+            }
+
+            @Override
+            public void onFailure(Call call, IOException e) {
+                callback.onFailure(new NetworkException(e));
+            }
+        });
+    }
+
     public void getRequestCompat(String servlet, String jsonParametersString, boolean encryption, NetworkCallback callback) {
         StringBuilder parameters = new StringBuilder("?");
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
