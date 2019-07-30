@@ -112,7 +112,6 @@ public class RichkwarePanel implements View {
         MainFrame.pack();
 
         credentialPanel.setVisible(false);
-        deleteCryptoStateButton.setVisible(false);
         if (establishSecureConnectionButton.getActionListeners().length == 0) {
             establishSecureConnectionButton.addActionListener(new ActionListener() {
                 @Override
@@ -125,7 +124,6 @@ public class RichkwarePanel implements View {
                     app.getController().initSecureConnection(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            deleteCryptoStateButton.setVisible(true);
                             establishSecureConnectionButton.setVisible(false);
                             credentialPanel.setVisible(true);
                             for (Component comp : urlPanel.getComponents())
@@ -140,6 +138,8 @@ public class RichkwarePanel implements View {
 
                 }
             });
+        } else {
+            credentialPanel.setVisible(true);
         }
 
         if (loginButton.getActionListeners().length == 0) {
@@ -172,13 +172,18 @@ public class RichkwarePanel implements View {
                 }
             });
         }
-
-        deleteCryptoStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                app.getController().deleteCryptoState();
-            }
-        });
+        if (deleteCryptoStateButton.getActionListeners().length == 0) {
+            deleteCryptoStateButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    app.getController().deleteCryptoState();
+                    establishSecureConnectionButton.setVisible(true);
+                    credentialPanel.setVisible(false);
+                    for (Component comp : urlPanel.getComponents())
+                        comp.setEnabled(true);
+                }
+            });
+        }
     }
 
     private void loadDevicesPanel() {
