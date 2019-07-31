@@ -12,8 +12,8 @@ public class App implements Runnable {
 
     public void run() {
         LookAndFeel.initLookAndFeel("System", "Metal");
-        view = new RichkwarePanel(this);
         controller = new Controller();
+        view = new RichkwarePanel(this);
     }
 
     public Controller getController() {

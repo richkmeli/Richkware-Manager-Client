@@ -7,20 +7,29 @@ import it.richkmeli.RMC.model.ModelException;
 import it.richkmeli.RMC.utils.Logger;
 import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.RMC.view.View;
+import it.richkmeli.jframework.crypto.Crypto;
+import org.json.JSONObject;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 public class RichkwarePanel implements View {
+    public static final String KEY_URL = "url";
+    public static final String SECUREDATA_PROTOCOLLO_KEY = "protocollo";
+    public static final String SECUREDATA_SERVER_KEY = "server";
+    public static final String SECUREDATA_PORT_KEY = "port";
+    public static final String SECUREDATA_SERVICE_KEY = "service";
     private JFrame MainFrame;
-    private JPanel LoginPanel;
     private JPasswordField passwordField;
     private JTextField emailField;
     private JTextField protocoloField;
@@ -81,6 +90,8 @@ public class RichkwarePanel implements View {
     private JButton establishSecureConnectionButton;
     private JPanel credentialPanel;
     private JPanel urlPanel;
+    private JPanel SecureConnectPanel;
+    private JPanel EstablishDeletePanel;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -111,35 +122,77 @@ public class RichkwarePanel implements View {
         AFTER_LOGIN.setVisible(false);
         MainFrame.pack();
 
-        credentialPanel.setVisible(false);
+        File urlFile = new File("TestURL.txt");
+        String filePassword = "test";
+        String urlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
+        if (urlJsonString.equalsIgnoreCase("")) { //PRIMA APERTURA O SENZA STATO
+            loadUrlPanel();
+        } else {
+            JSONObject urlJson = new JSONObject(urlJsonString);
+            try {
+                app.getController().getNetwork().setURL(urlJson.getString(SECUREDATA_PROTOCOLLO_KEY), urlJson.getString(SECUREDATA_SERVER_KEY), urlJson.getString(SECUREDATA_PORT_KEY), urlJson.getString(SECUREDATA_SERVICE_KEY));
+                errorField.setText(" ");
+            } catch (NetworkException ex) {
+                ex.printStackTrace();
+                //TODO GESTIRE ERRORE
+            }
+            app.getController().initSecureConnection(new RichkwareCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    loadCredentialPanel();
+                    errorField.setText(" ");
+                }
+
+                @Override
+                public void onFailure(String response) {
+                    loadUrlPanel();
+                    //TODO GESTIRE ERRORE
+                    errorField.setText(response);
+                }
+            });
+        }
+
         if (establishSecureConnectionButton.getActionListeners().length == 0) {
             establishSecureConnectionButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    for (Component comp : urlPanel.getComponents()) //disable fields
+                        comp.setEnabled(false);
+                    String protocollo = protocoloField.getText();
+                    String server = serverField.getText();
+                    String port = portField.getText();
+                    String service = serviceField.getText();
                     try {
-                        app.getController().getNetwork().setURL(protocoloField.getText(), serverField.getText(), portField.getText(), serviceField.getText());
+                        app.getController().getNetwork().setURL(protocollo, server, port, service);
+                        errorField.setText(" ");
                     } catch (NetworkException ex) {
                         ex.printStackTrace();
+                        loadUrlPanel();
+                        //TODO GESTIRE ERRORE
                     }
                     app.getController().initSecureConnection(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            establishSecureConnectionButton.setVisible(false);
-                            credentialPanel.setVisible(true);
-                            for (Component comp : urlPanel.getComponents())
-                                comp.setEnabled(false);
+                            //if success save url-data and load credential panel
+                            JSONObject urlJson = new JSONObject()
+                                    .put(SECUREDATA_PROTOCOLLO_KEY, protocollo)
+                                    .put(SECUREDATA_SERVER_KEY, server)
+                                    .put(SECUREDATA_PORT_KEY, port)
+                                    .put(SECUREDATA_SERVICE_KEY, service);
+                            Crypto.putData(urlFile, filePassword, KEY_URL, urlJson.toString());
+                            loadCredentialPanel();
+                            errorField.setText(" ");
                         }
 
                         @Override
                         public void onFailure(String response) {
+                            //TODO GESTIRE ERRORE
+                            loadUrlPanel();
                             errorField.setText(response);
                         }
                     });
-
                 }
             });
-        } else {
-            credentialPanel.setVisible(true);
         }
 
         if (loginButton.getActionListeners().length == 0) {
@@ -158,7 +211,6 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onFailure(String response) {
                             errorField.setText(ResponseParser.parseMessage(response));
-                            errorField.setVisible(true);
                         }
                     });
                 }
@@ -177,13 +229,29 @@ public class RichkwarePanel implements View {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     app.getController().deleteCryptoState();
-                    establishSecureConnectionButton.setVisible(true);
-                    credentialPanel.setVisible(false);
-                    for (Component comp : urlPanel.getComponents())
-                        comp.setEnabled(true);
+                    loadUrlPanel();
+                    errorField.setText(" ");
                 }
             });
         }
+    }
+
+    private void loadUrlPanel() {
+        credentialPanel.setVisible(false);
+        for (Component comp : urlPanel.getComponents())
+            comp.setEnabled(true);
+        urlPanel.setVisible(true);
+        establishSecureConnectionButton.setVisible(true);
+        SecureConnectPanel.setBorder(new TitledBorder(new LineBorder(Color.RED, 2), "SecureConnection", TitledBorder.LEFT, TitledBorder.TOP));
+        MainFrame.pack();
+    }
+
+    private void loadCredentialPanel() {
+        credentialPanel.setVisible(true);
+        urlPanel.setVisible(false);
+        establishSecureConnectionButton.setVisible(false);
+        SecureConnectPanel.setBorder(new TitledBorder(new LineBorder(Color.GREEN, 2), "SecureConnection", TitledBorder.LEFT, TitledBorder.TOP));
+        MainFrame.pack();
     }
 
     private void loadDevicesPanel() {
