@@ -1,7 +1,7 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.rmc.controller;
 
-import it.richkmeli.RMC.swing.RichkwarePanel;
-import it.richkmeli.RMC.view.View;
+import it.richkmeli.rmc.swing.RichkwarePanel;
+import it.richkmeli.rmc.view.View;
 
 /**
  * Created by richk on 25/05/17.

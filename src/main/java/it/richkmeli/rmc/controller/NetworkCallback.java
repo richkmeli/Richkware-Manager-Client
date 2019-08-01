@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.rmc.controller;
 
 public interface NetworkCallback {
 

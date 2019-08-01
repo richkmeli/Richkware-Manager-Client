@@ -1,16 +1,16 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.rmc.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.richkmeli.RMC.controller.network.Network;
-import it.richkmeli.RMC.controller.network.SocketCallback;
-import it.richkmeli.RMC.controller.network.SocketThread;
-import it.richkmeli.RMC.model.Device;
-import it.richkmeli.RMC.model.ModelException;
-import it.richkmeli.RMC.swing.ListCallback;
-import it.richkmeli.RMC.swing.RichkwareCallback;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
+import it.richkmeli.rmc.controller.network.Network;
+import it.richkmeli.rmc.controller.network.SocketCallback;
+import it.richkmeli.rmc.controller.network.SocketThread;
+import it.richkmeli.rmc.model.Device;
+import it.richkmeli.rmc.model.ModelException;
+import it.richkmeli.rmc.swing.ListCallback;
+import it.richkmeli.rmc.swing.RichkwareCallback;
+import it.richkmeli.rmc.utils.Logger;
+import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.jframework.crypto.Crypto;
 import org.json.JSONArray;
 import org.json.JSONObject;

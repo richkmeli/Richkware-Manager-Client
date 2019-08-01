@@ -1,6 +1,6 @@
-package it.richkmeli.RMC.swing;
+package it.richkmeli.rmc.swing;
 
-import it.richkmeli.RMC.model.Device;
+import it.richkmeli.rmc.model.Device;
 
 import java.util.List;
 

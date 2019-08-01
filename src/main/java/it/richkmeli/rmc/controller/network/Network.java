@@ -1,10 +1,10 @@
-package it.richkmeli.RMC.controller.network;
+package it.richkmeli.rmc.controller.network;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.richkmeli.RMC.controller.NetworkCallback;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
+import it.richkmeli.rmc.controller.NetworkCallback;
+import it.richkmeli.rmc.utils.Logger;
+import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.crypto.CryptoCompat;
 import it.richkmeli.jframework.crypto.KeyExchangePayloadCompat;

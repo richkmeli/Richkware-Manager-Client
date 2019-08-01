@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.model;
+package it.richkmeli.rmc.model;
 
 import java.util.List;
 

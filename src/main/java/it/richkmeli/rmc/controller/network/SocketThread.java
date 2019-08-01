@@ -1,7 +1,7 @@
-package it.richkmeli.RMC.controller.network;
+package it.richkmeli.rmc.controller.network;
 
-import it.richkmeli.RMC.swing.RichkwareCallback;
-import it.richkmeli.RMC.utils.Logger;
+import it.richkmeli.rmc.swing.RichkwareCallback;
+import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.jframework.crypto.Crypto;
 
 import java.io.*;
