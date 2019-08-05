@@ -9,11 +9,15 @@ Client of **Richkware-Manager-Server**, that it obtains the list of all hosts fr
 
 [Richkware-Manager-Server](https://github.com/richkmeli/Richkware-Manager-Server): Service for the management of hosts in which is present an instance of malware developed using **Richkware** framework.
 
-![](http://richk.altervista.org/RichkwareDiagram.svg)
+![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Diagram/RichkwareDiagram1.2.png)
 
 ## GUI
 
-![](http://richk.altervista.org/rmc.png)
+![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_secureconnection.PNG)
+
+![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_login.PNG)
+
+![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/rmc.png)
 
 ## Get Started
 
