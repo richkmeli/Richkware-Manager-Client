@@ -1,6 +1,6 @@
-package it.richkmeli.RMC.controller.network;
+package it.richkmeli.rmc.controller.network;
 
-import it.richkmeli.RMC.model.ModelException;
+import it.richkmeli.rmc.model.ModelException;
 
 /**
  * Created by richk on 17/06/17.

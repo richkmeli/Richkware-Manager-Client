@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.utils;
+package it.richkmeli.rmc.utils;
 
 import org.json.JSONException;
 import org.json.JSONObject;

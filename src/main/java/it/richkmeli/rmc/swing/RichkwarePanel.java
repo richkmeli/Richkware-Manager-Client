@@ -1,12 +1,12 @@
-package it.richkmeli.RMC.swing;
+package it.richkmeli.rmc.swing;
 
-import it.richkmeli.RMC.controller.App;
-import it.richkmeli.RMC.controller.network.NetworkException;
-import it.richkmeli.RMC.model.Device;
-import it.richkmeli.RMC.model.ModelException;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
-import it.richkmeli.RMC.view.View;
+import it.richkmeli.rmc.controller.App;
+import it.richkmeli.rmc.controller.network.NetworkException;
+import it.richkmeli.rmc.model.Device;
+import it.richkmeli.rmc.model.ModelException;
+import it.richkmeli.rmc.utils.Logger;
+import it.richkmeli.rmc.utils.ResponseParser;
+import it.richkmeli.rmc.view.View;
 import it.richkmeli.jframework.crypto.Crypto;
 import org.json.JSONObject;
 

@@ -49,7 +49,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.richkmeli.RMC.RichkwareManagerClient</mainClass>
+                            <mainClass>it.richkmeli.rmc.RichkwareManagerClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

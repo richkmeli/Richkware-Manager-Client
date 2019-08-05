@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.utils;
+package it.richkmeli.rmc.utils;
 
 public class Logger {
     public static final Boolean DEBUG = true;
