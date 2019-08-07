@@ -2,6 +2,7 @@ package it.richkmeli.rmc.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.rmc.controller.network.Network;
 import it.richkmeli.rmc.controller.network.SocketCallback;
 import it.richkmeli.rmc.controller.network.SocketThread;
@@ -11,7 +12,7 @@ import it.richkmeli.rmc.swing.ListCallback;
 import it.richkmeli.rmc.swing.RichkwareCallback;
 import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.rmc.utils.ResponseParser;
-import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.rmc.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -30,7 +31,7 @@ public class Controller {
 
     private Network network;
     private Crypto.Client cryptoClient;
-    private String clientID;
+    private static String clientID = null;
     private List<String> devicesList;
     private Map<Device, SocketThread> devicesMap;
 
@@ -226,7 +227,6 @@ public class Controller {
     public void reverseCommandResponse(Device device, RichkwareCallback callback) {
         JSONObject jsonParameters = new JSONObject();
         jsonParameters.put("data0", device.getName());
-        jsonParameters.put("data1", "client");
         //TODO encryption
         network.getRequest("command", jsonParameters.toString(), null, new NetworkCallback() {
             @Override
@@ -320,10 +320,18 @@ public class Controller {
         });
     }
 
+    private void setClientID() {
+        if (clientID == null) {
+            String id = "RMC_" + Utils.getDeviceIdentifier();
+            clientID = Base64.getUrlEncoder().encodeToString(id.getBytes());
+        }
+        Logger.i(Utils.getDeviceInfo());
+    }
+
     public void initSecureConnection(RichkwareCallback callback) {
         Logger.i("initSecureConnection...");
 
-        this.clientID = "RMC_001";
+        setClientID();
 
         //TODO verificare che non si leghi ad un unico server, altrimenti diverso file TXT, nome server nel file TXT
         // re-init to allow a connection to a different server

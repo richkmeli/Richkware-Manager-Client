@@ -1,5 +1,6 @@
 package it.richkmeli.rmc.swing;
 
+import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.rmc.controller.App;
 import it.richkmeli.rmc.controller.network.NetworkException;
 import it.richkmeli.rmc.model.Device;
@@ -7,17 +8,13 @@ import it.richkmeli.rmc.model.ModelException;
 import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.rmc.view.View;
-import it.richkmeli.jframework.crypto.Crypto;
 import org.json.JSONObject;
 
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -29,6 +26,7 @@ public class RichkwarePanel implements View {
     public static final String SECUREDATA_SERVER_KEY = "server";
     public static final String SECUREDATA_PORT_KEY = "port";
     public static final String SECUREDATA_SERVICE_KEY = "service";
+    public static final String KEY_AUTO_ESTABLISH = "autoEstablish";
     private JFrame MainFrame;
     private JPasswordField passwordField;
     private JTextField emailField;
@@ -92,6 +90,7 @@ public class RichkwarePanel implements View {
     private JPanel urlPanel;
     private JPanel SecureConnectPanel;
     private JPanel EstablishDeletePanel;
+    private JCheckBox autoEstablishSecureConnectionCheckBox;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -125,10 +124,12 @@ public class RichkwarePanel implements View {
         File urlFile = new File("TestURL.txt");
         String filePassword = "test";
         String urlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
-        if (urlJsonString.equalsIgnoreCase("")) { //PRIMA APERTURA O SENZA STATO
+        boolean autoEstablish = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH).equalsIgnoreCase("true");
+        if (urlJsonString.equalsIgnoreCase("") || !autoEstablish) { //PRIMA APERTURA O SENZA STATO
             loadUrlPanel();
         } else {
             JSONObject urlJson = new JSONObject(urlJsonString);
+            autoEstablishSecureConnectionCheckBox.setSelected(autoEstablish);
             try {
                 app.getController().getNetwork().setURL(urlJson.getString(SECUREDATA_PROTOCOLLO_KEY), urlJson.getString(SECUREDATA_SERVER_KEY), urlJson.getString(SECUREDATA_PORT_KEY), urlJson.getString(SECUREDATA_SERVICE_KEY));
                 errorField.setText(" ");
@@ -205,7 +206,20 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onSuccess(String response) {
                             errorField.setText(" ");
-                            loadDevicesPanel();
+                            app.getController().initSecureConnection(new RichkwareCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    loadDevicesPanel();
+                                    errorField.setText(" ");
+                                }
+
+                                @Override
+                                public void onFailure(String response) {
+                                    loadCredentialPanel();
+                                    //TODO GESTIRE ERRORE
+                                    errorField.setText(response);
+                                }
+                            });
                         }
 
                         @Override
@@ -231,6 +245,18 @@ public class RichkwarePanel implements View {
                     app.getController().deleteCryptoState();
                     loadUrlPanel();
                     errorField.setText(" ");
+                }
+            });
+        }
+        if (autoEstablishSecureConnectionCheckBox.getItemListeners().length == 0) {
+            autoEstablishSecureConnectionCheckBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        Crypto.putData(urlFile, filePassword, KEY_AUTO_ESTABLISH, "true");
+                    } else {
+                        Crypto.putData(urlFile, filePassword, KEY_AUTO_ESTABLISH, "false");
+                    }
                 }
             });
         }

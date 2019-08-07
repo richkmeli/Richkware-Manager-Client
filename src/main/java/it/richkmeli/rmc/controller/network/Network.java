@@ -2,13 +2,13 @@ package it.richkmeli.rmc.controller.network;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.richkmeli.rmc.controller.NetworkCallback;
-import it.richkmeli.rmc.utils.Logger;
-import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.crypto.CryptoCompat;
 import it.richkmeli.jframework.crypto.KeyExchangePayloadCompat;
 import it.richkmeli.jframework.crypto.exception.CryptoException;
+import it.richkmeli.rmc.controller.NetworkCallback;
+import it.richkmeli.rmc.utils.Logger;
+import it.richkmeli.rmc.utils.ResponseParser;
 import okhttp3.*;
 import org.json.JSONObject;
 
@@ -72,10 +72,11 @@ public class Network {
             jsonParametersString = jsonParametersString == null ? "" : jsonParametersString;
             //String encryptedParameters = cryptoClient.encrypt(params);
             // when encryption is enabled they are passed as JSON
+            Logger.i("Get request to: (decrypted) " + url + " :\"" + jsonParametersString + "\"");
             String encryptedParameters = cryptoClient.encrypt(jsonParametersString);
 
-            Logger.i("Get request to: " + url + " :\"" + encryptedParameters + "\"");
-            parameters = new StringBuilder("?encryption=true&data=" + encryptedParameters);
+            Logger.i("Get request to:  (encrypted) " + url + " :\"" + encryptedParameters + "\"");
+            parameters = new StringBuilder("?channel=rmc&data=" + encryptedParameters);
         }
 
 //        URL url = null;
@@ -398,5 +399,7 @@ public class Network {
 
         return responseString;
     }
+
+
 }
 
