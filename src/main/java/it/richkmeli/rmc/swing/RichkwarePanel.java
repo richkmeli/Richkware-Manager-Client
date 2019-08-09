@@ -6,7 +6,6 @@ import it.richkmeli.rmc.controller.network.NetworkException;
 import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
 import it.richkmeli.rmc.utils.Logger;
-import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.rmc.view.View;
 import org.json.JSONObject;
 
@@ -202,34 +201,36 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent event) {
                     String email = emailField.getText();
                     String password = passwordField.getText();
-                    app.getController().login(email, password, new RichkwareCallback() {
+                    app.getController().initSecureConnection(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            errorField.setText(" ");
-//                            app.getController().initSecureConnection(new RichkwareCallback() {
-//                                @Override
-//                                public void onSuccess(String response) {
-                            loadDevicesPanel();
-                            errorField.setText(" ");
-//                                }
-//
-//                                @Override
-//                                public void onFailure(String response) {
-//                                    loadCredentialPanel();
-//                                    TODO GESTIRE ERRORE
-//                                    errorField.setText(response);
-//                                }
-//                            });
+                            app.getController().login(email, password, new RichkwareCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    errorField.setText(" ");
+                                    loadDevicesPanel();
+                                    errorField.setText(" ");
+                                }
+
+                                @Override
+                                public void onFailure(String response) {
+                                    errorField.setText(response);
+                                }
+                            });
                         }
 
                         @Override
                         public void onFailure(String response) {
-                            errorField.setText(ResponseParser.parseMessage(response));
+                            loadCredentialPanel();
+                            // TODO GESTIRE ERRORE
+                            errorField.setText(response);
                         }
                     });
+
                 }
             });
         }
+
         if (SkipButton.getActionListeners().length == 0) {
             SkipButton.addActionListener(new ActionListener() {
                 @Override
@@ -434,7 +435,10 @@ public class RichkwarePanel implements View {
         JOptionPane.showMessageDialog(MainFrame, err, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void connectPanel(JButton SendCommandButton, JTextField commandToSendTextField, JTextArea DeviceResponseTextArea, JButton ConnectDevice, JCheckBox directCheckBox, JTextField addressOfDeviceTextField, JCheckBox forceEncryptionCommandCheckBox, JButton DisconnectDevice, Connect connetionType) {
+    private void connectPanel(JButton SendCommandButton, JTextField commandToSendTextField, JTextArea
+            DeviceResponseTextArea, JButton ConnectDevice, JCheckBox directCheckBox, JTextField
+                                      addressOfDeviceTextField, JCheckBox forceEncryptionCommandCheckBox, JButton DisconnectDevice, Connect
+                                      connetionType) {
         devices = new ArrayList<>();
 
         disableInput(connetionType);

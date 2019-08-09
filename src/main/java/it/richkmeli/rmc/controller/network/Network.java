@@ -77,7 +77,12 @@ public class Network {
             //String encryptedParameters = cryptoClient.encrypt(params);
             // when encryption is enabled they are passed as JSON
             Logger.i("Get request to: (decrypted) " + url + " :\"" + jsonParametersString + "\"");
-            String encryptedParameters = cryptoClient.encrypt(jsonParametersString);
+            String encryptedParameters = null;
+            try {
+                encryptedParameters = cryptoClient.encrypt(jsonParametersString);
+            } catch (CryptoException e) {
+                callback.onFailure(e);
+            }
 
             Logger.i("Get request to:  (encrypted) " + url + " :\"" + encryptedParameters + "\"");
             parameters = new StringBuilder("?channel=rmc&data=" + encryptedParameters);
@@ -113,29 +118,37 @@ public class Network {
                 if (response.headers().get("Set-Cookie") != null)
                     lastHeaders = response.headers();
 
-                if (cryptoClient != null) {
-                    Logger.i("Get response (encrypted): " + jsonResponse);
+                if (ResponseParser.parseStatus(jsonResponse).equalsIgnoreCase("ok")) {
 
-                    String messageResponse = ResponseParser.parseMessage(jsonResponse);
+                    if (cryptoClient != null) {
+                        Logger.i("Get response (encrypted): " + jsonResponse);
 
-                    //TODO boolean decryptResponse param
-//                        if(decryptResponse){
-                    messageResponse = cryptoClient.decrypt(messageResponse);
-//                        }
+                        String messageResponse = ResponseParser.parseMessage(jsonResponse);
 
-                    //CREATE new JSON
-                    JSONObject json = new JSONObject(jsonResponse);
-                    json.remove("message");
-                    json.put("message", messageResponse);
-                    jsonResponse = json.toString();
+                        try {
+                            messageResponse = cryptoClient.decrypt(messageResponse);
+                        } catch (CryptoException e) {
+                            callback.onFailure(e);
+                        }
 
-                    Logger.i("Get response (decrypted): " + jsonResponse);
+                        //CREATE new JSON
+                        JSONObject json = new JSONObject(jsonResponse);
+                        json.remove("message");
+                        json.put("message", messageResponse);
+                        jsonResponse = json.toString();
 
-                    callback.onSuccess(jsonResponse);
+                        Logger.i("Get response (decrypted): " + jsonResponse);
+
+                        callback.onSuccess(jsonResponse);
+                    } else {
+                        Logger.i("Get response: " + jsonResponse);
+
+                        callback.onSuccess(jsonResponse);
+                    }
                 } else {
                     Logger.i("Get response: " + jsonResponse);
 
-                    callback.onSuccess(jsonResponse);
+                    callback.onFailure(new Exception(ResponseParser.parseMessage(jsonResponse)));
                 }
             }
 
