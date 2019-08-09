@@ -224,11 +224,12 @@ public class Controller {
 
     }
 
-    public void reverseCommandResponse(Device device, RichkwareCallback callback) {
+    public void reverseCommandResponse(RichkwareCallback callback) {
         JSONObject jsonParameters = new JSONObject();
-        jsonParameters.put("data0", device.getName());
+
+        jsonParameters.put("data0", devicesList.get(0));
         //TODO encryption
-        network.getRequest("command", jsonParameters.toString(), null, new NetworkCallback() {
+        network.getRequest("command", jsonParameters.toString(), cryptoClient, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -280,6 +281,7 @@ public class Controller {
 
     public void deleteCryptoState() {
         cryptoClient.reset();
+        network.deleteSession();
     }
 
     private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { //callback chiamata allo stato 3

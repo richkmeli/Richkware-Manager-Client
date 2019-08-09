@@ -137,20 +137,20 @@ public class RichkwarePanel implements View {
                 ex.printStackTrace();
                 //TODO GESTIRE ERRORE
             }
-            app.getController().initSecureConnection(new RichkwareCallback() {
-                @Override
-                public void onSuccess(String response) {
-                    loadCredentialPanel();
-                    errorField.setText(" ");
-                }
-
-                @Override
-                public void onFailure(String response) {
-                    loadUrlPanel();
-                    //TODO GESTIRE ERRORE
-                    errorField.setText(response);
-                }
-            });
+//            app.getController().initSecureConnection(new RichkwareCallback() {
+//                @Override
+//                public void onSuccess(String response) {
+            loadCredentialPanel();
+            errorField.setText(" ");
+//                }
+//
+//                @Override
+//                public void onFailure(String response) {
+//                    loadUrlPanel();
+//                    //TODO GESTIRE ERRORE
+//                    errorField.setText(response);
+//                }
+//            });
         }
 
         if (establishSecureConnectionButton.getActionListeners().length == 0) {
@@ -206,20 +206,20 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onSuccess(String response) {
                             errorField.setText(" ");
-                            app.getController().initSecureConnection(new RichkwareCallback() {
-                                @Override
-                                public void onSuccess(String response) {
-                                    loadDevicesPanel();
-                                    errorField.setText(" ");
-                                }
-
-                                @Override
-                                public void onFailure(String response) {
-                                    loadCredentialPanel();
-                                    //TODO GESTIRE ERRORE
-                                    errorField.setText(response);
-                                }
-                            });
+//                            app.getController().initSecureConnection(new RichkwareCallback() {
+//                                @Override
+//                                public void onSuccess(String response) {
+                            loadDevicesPanel();
+                            errorField.setText(" ");
+//                                }
+//
+//                                @Override
+//                                public void onFailure(String response) {
+//                                    loadCredentialPanel();
+//                                    TODO GESTIRE ERRORE
+//                                    errorField.setText(response);
+//                                }
+//                            });
                         }
 
                         @Override
@@ -370,6 +370,7 @@ public class RichkwarePanel implements View {
                     if (devicesCount == 1) {
                         clearTable();
                         app.getController().connectDevice(getSelectedDevice());
+
                         enableInput();
                     } else if (devicesCount > 1) {
                         clearTable();
@@ -385,10 +386,10 @@ public class RichkwarePanel implements View {
             ReceiveResponseButtonReverse.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    app.getController().reverseCommandResponse(device, new RichkwareCallback() {
+                    app.getController().reverseCommandResponse(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            response = new String(Base64.getDecoder().decode(ResponseParser.parseMessage(response)));
+                            response = new String(Base64.getDecoder().decode(response));
                             CommandsTextAreaReverse.setText(response);
                         }
 

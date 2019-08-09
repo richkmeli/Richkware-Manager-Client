@@ -45,6 +45,10 @@ public class Network {
         }
     }
 
+    public void deleteSession() {
+        lastHeaders = null;
+    }
+
     public void openSocket(String ip, String port, String encryptionKey, boolean forceEncryption, SocketCallback callback) {
         SocketThread socketThread = new SocketThread(ip, port, encryptionKey, forceEncryption, callback);
         socketThread.start();
