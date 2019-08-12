@@ -22,7 +22,7 @@ public class SocketThread extends Thread {
     private PrintWriter outBuffer;
     private BufferedReader inBuffer;
 
-    private boolean open;
+    private volatile boolean open;
 
     public SocketThread(String ip, String port, String encryptionKey, boolean forceEncryption, SocketCallback callback) {
         this.ip = ip;

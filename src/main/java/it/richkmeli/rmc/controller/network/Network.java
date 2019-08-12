@@ -59,7 +59,7 @@ public class Network {
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
             JSONObject jsonParameters = new JSONObject(jsonParametersString);
             for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
             }
         }
 
@@ -164,7 +164,7 @@ public class Network {
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
             JSONObject jsonParameters = new JSONObject(jsonParametersString);
             for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
             }
         }
 
@@ -215,7 +215,7 @@ public class Network {
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
             JSONObject jsonParameters = new JSONObject(jsonParametersString);
             for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
             }
         }
 
@@ -226,7 +226,7 @@ public class Network {
                 PublicKey RSApublicKeyClient = keyPair.getPublic();
                 RSAprivateKeyClient = keyPair.getPrivate();
 
-                parameters.append("?&encryption=true&Kpub=" + CryptoCompat.savePublicKey(RSApublicKeyClient));
+                parameters.append("?&encryption=true&Kpub=").append(CryptoCompat.savePublicKey(RSApublicKeyClient));
             }
         } catch (GeneralSecurityException | CryptoException e) {
             callback.onFailure(new NetworkException(e));

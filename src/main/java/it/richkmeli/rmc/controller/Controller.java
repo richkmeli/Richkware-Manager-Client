@@ -195,16 +195,16 @@ public class Controller {
 
     public void reverseCommand(String commands, boolean encryption, RichkwareCallback callback) {
         String[] commandsArray = commands.split("\n");
-        String encodedCommands = "";
+        StringBuilder encodedCommands = new StringBuilder();
         for (int i = 0; i < commandsArray.length; i++) {
-            encodedCommands += (Base64.getEncoder().encodeToString(commandsArray[i].getBytes()));
+            encodedCommands.append(Base64.getEncoder().encodeToString(commandsArray[i].getBytes()));
             if (i != commandsArray.length - 1)
-                encodedCommands += "##";
+                encodedCommands.append("##");
         }
-        encodedCommands = Base64.getEncoder().encodeToString(encodedCommands.getBytes());
+        encodedCommands = new StringBuilder(Base64.getEncoder().encodeToString(encodedCommands.toString().getBytes()));
         JSONObject jsonParameters = new JSONObject()
                 .put("devices", new JSONArray(devicesList))
-                .put("commands", encodedCommands);
+                .put("commands", encodedCommands.toString());
 
         //TODO encryption
         network.putRequest("command", jsonParameters.toString(), null, new NetworkCallback() {
@@ -284,7 +284,7 @@ public class Controller {
         network.deleteSession();
     }
 
-    private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { //callback chiamata allo stato 3
+    private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { // callback chiamata allo stato 3
         String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), (String) map.get(SERVER_RESPONSE));
 
         Logger.i(clientResponse);

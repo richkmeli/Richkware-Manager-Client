@@ -7,7 +7,7 @@ import it.richkmeli.rmc.view.View;
  * Created by richk on 25/05/17.
  */
 public class App implements Runnable {
-    public View view;    // comunicazione da controller a view
+    public View view;    // communication from controller to view
     private Controller controller;
 
     public void run() {
