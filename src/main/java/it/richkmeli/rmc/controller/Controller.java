@@ -301,6 +301,11 @@ public class Controller {
             @Override
             public void onSuccess(String response) {
                 if (attempt < SECURE_CONNECTION_MAX_ATTEMPT) {
+
+                    String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), response);
+                    int clientState = new JSONObject(clientResponse).getInt("state");
+                    Logger.i("clientState: " + clientState);
+
                     if (clientState != 3) {
                         map.remove(SERVER_RESPONSE);
                         map.put(SERVER_RESPONSE, response);

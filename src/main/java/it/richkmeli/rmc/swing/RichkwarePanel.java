@@ -136,20 +136,20 @@ public class RichkwarePanel implements View {
                 ex.printStackTrace();
                 //TODO GESTIRE ERRORE
             }
-//            app.getController().initSecureConnection(new RichkwareCallback() {
-//                @Override
-//                public void onSuccess(String response) {
-            loadCredentialPanel();
-            errorField.setText(" ");
-//                }
-//
-//                @Override
-//                public void onFailure(String response) {
-//                    loadUrlPanel();
-//                    //TODO GESTIRE ERRORE
-//                    errorField.setText(response);
-//                }
-//            });
+            app.getController().initSecureConnection(new RichkwareCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    loadCredentialPanel();
+                    errorField.setText(" ");
+                }
+
+                @Override
+                public void onFailure(String response) {
+                    loadUrlPanel();
+                    //TODO GESTIRE ERRORE
+                    errorField.setText(response);
+                }
+            });
         }
 
         if (establishSecureConnectionButton.getActionListeners().length == 0) {
@@ -590,8 +590,14 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onSuccess(List<Device> response) {
                             deviceList = response;
+                            Logger.i("Devices list");
+                            for (Device device : response) {
+                                Logger.i("Device: " + device.getName());
+                            }
                             progressBar1.setValue(20);
+                            Logger.i("Before setModel");
                             InfoTable.setModel(new DeviceTableModel(deviceList));
+                            Logger.i("After setModel");
                             progressBar1.setValue(40);
 
                             updateRowHeights(InfoTable);
