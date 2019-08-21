@@ -305,8 +305,9 @@ public class Controller {
                     String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), response);
                     int clientState = new JSONObject(clientResponse).getInt("state");
                     Logger.i("clientState: " + clientState);
-
-                    if (clientState != 3) {
+                    if (clientState == -1) {
+                        callback.onFailure("Corrupted state");
+                    } else if (clientState != 3) {
                         map.remove(SERVER_RESPONSE);
                         map.put(SERVER_RESPONSE, response);
                         Logger.i(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));

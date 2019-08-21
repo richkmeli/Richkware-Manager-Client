@@ -122,12 +122,12 @@ public class RichkwarePanel implements View {
 
         File urlFile = new File("TestURL.txt");
         String filePassword = "test";
-        String urlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
+        String serverUrlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
         boolean autoEstablish = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH).equalsIgnoreCase("true");
-        if (urlJsonString.equalsIgnoreCase("") || !autoEstablish) { //PRIMA APERTURA O SENZA STATO
+        if (serverUrlJsonString.equalsIgnoreCase("") || !autoEstablish) { //PRIMA APERTURA O SENZA STATO
             loadUrlPanel();
-        } else {
-            JSONObject urlJson = new JSONObject(urlJsonString);
+        } else { // auto-establish secure connection
+            JSONObject urlJson = new JSONObject(serverUrlJsonString);
             autoEstablishSecureConnectionCheckBox.setSelected(autoEstablish);
             try {
                 app.getController().getNetwork().setURL(urlJson.getString(SECUREDATA_PROTOCOLLO_KEY), urlJson.getString(SECUREDATA_SERVER_KEY), urlJson.getString(SECUREDATA_PORT_KEY), urlJson.getString(SECUREDATA_SERVICE_KEY));
@@ -583,6 +583,8 @@ public class RichkwarePanel implements View {
             @Override
             public void run() {
                 try {
+                    //TODO si può anche rimuovere
+                    InfoTable.setModel(new DeviceTableModel(new ArrayList<>()));
                     progressBar1.setValue(0);
 
                     // if encryption check box is selected, RMC uses encryption to refresh the list of devices

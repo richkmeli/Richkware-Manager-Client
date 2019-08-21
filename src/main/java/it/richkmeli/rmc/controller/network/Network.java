@@ -1,7 +1,5 @@
 package it.richkmeli.rmc.controller.network;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.crypto.exception.CryptoException;
 import it.richkmeli.rmc.controller.NetworkCallback;
@@ -10,15 +8,9 @@ import it.richkmeli.rmc.utils.ResponseParser;
 import okhttp3.*;
 import org.json.JSONObject;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 
 /**
  * Created by richk on 17/06/17.
@@ -414,7 +406,6 @@ public class Network {
 
         return responseString;
     }
-
 
 }
 
