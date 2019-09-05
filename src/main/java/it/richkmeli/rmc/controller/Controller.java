@@ -19,7 +19,6 @@ import org.json.JSONObject;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -179,7 +178,12 @@ public class Controller {
 //    }
 
     public void connectDevice(List<Device> devices) {
-        devicesList = devices.stream().map(Device::getName).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (Device device : devices) {
+            String name = device.getName();
+            list.add(name);
+        }
+        devicesList = list;
     }
 
 //
