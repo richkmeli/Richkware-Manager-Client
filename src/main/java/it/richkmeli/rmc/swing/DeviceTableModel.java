@@ -67,7 +67,7 @@ public class DeviceTableModel implements TableModel {
                 case 4:
                     return device.getEncryptionKey();
                 case 5:
-                    return device.getUserAssociated();
+                    return device.getAssociatedUser();
                 default:
                     throw new InvalidParameterException("Column Index not valid");
             }

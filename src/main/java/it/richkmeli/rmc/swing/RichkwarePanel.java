@@ -475,7 +475,7 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     if (directCheckBox.isSelected()) { //Direct command to selected devices from table
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1), "", "", "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1), "", "", "", "", "");
                         app.getController().openSocket(device, forceEncryptionCommandCheckBox.isSelected(), new RichkwareCallback() {
                             @Override
                             public void onSuccess(String response) {
@@ -516,7 +516,7 @@ public class RichkwarePanel implements View {
                             app.getController().openSocket(devices, forceEncryptionCommandCheckBox.isSelected(), new RichkwareCallback() {
                                 @Override
                                 public void onSuccess(String response) {
-                                    addressOfDeviceTextField.setText("Multiple devies");
+                                    addressOfDeviceTextField.setText("Multiple devices");
                                     enableInput();
                                 }
 
