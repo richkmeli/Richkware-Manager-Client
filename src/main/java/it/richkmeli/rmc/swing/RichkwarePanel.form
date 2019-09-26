@@ -406,6 +406,7 @@
                         <properties>
                           <selected value="true"/>
                           <text value="Encryption (RMS)"/>
+                          <visible value="false"/>
                         </properties>
                       </component>
                       <component id="c23b5" class="javax.swing.JProgressBar" binding="progressBar1">
