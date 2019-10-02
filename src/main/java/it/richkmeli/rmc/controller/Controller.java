@@ -3,6 +3,7 @@ package it.richkmeli.rmc.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
 import it.richkmeli.rmc.controller.network.Network;
 import it.richkmeli.rmc.controller.network.SocketCallback;
 import it.richkmeli.rmc.controller.network.SocketThread;
@@ -10,7 +11,6 @@ import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
 import it.richkmeli.rmc.swing.ListCallback;
 import it.richkmeli.rmc.swing.RichkwareCallback;
-import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.rmc.utils.Utils;
 import org.json.JSONArray;
@@ -291,7 +291,7 @@ public class Controller {
     private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { // callback chiamata allo stato 3
         String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), (String) map.get(SERVER_RESPONSE));
 
-        Logger.i(clientResponse);
+        Logger.info(clientResponse);
 
         int clientState = new JSONObject(clientResponse).getInt("state");
 
@@ -299,7 +299,7 @@ public class Controller {
         parametersJson.put("clientID", clientID);
         parametersJson.put("data", new JSONObject(clientResponse).getString("payload"));
 
-        Logger.i("clientState: " + clientState);
+        Logger.info("clientState: " + clientState);
 
         getNetwork().getRequestCompat("secureConnection", parametersJson.toString(), new NetworkCallback() {
             @Override
@@ -308,13 +308,13 @@ public class Controller {
 
                     String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), response);
                     int clientState = new JSONObject(clientResponse).getInt("state");
-                    Logger.i("clientState: " + clientState);
+                    Logger.info("clientState: " + clientState);
                     if (clientState == -1) {
                         callback.onFailure("Corrupted state");
                     } else if (clientState != 3) {
                         map.remove(SERVER_RESPONSE);
                         map.put(SERVER_RESPONSE, response);
-                        Logger.i(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));
+                        Logger.info(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));
                         asyncInit(map, attempt + 1, callback);
                     } else {
                         //TODO chaiamata a se stesso se stato <3, oppure chiama callback
@@ -337,11 +337,11 @@ public class Controller {
             String id = "RMC_" + Utils.getDeviceIdentifier();
             clientID = Base64.getUrlEncoder().encodeToString(id.getBytes());
         }
-        Logger.i(Utils.getDeviceInfo());
+        Logger.info(Utils.getDeviceInfo());
     }
 
     public void initSecureConnection(RichkwareCallback callback) {
-        Logger.i("initSecureConnection...");
+        Logger.info("initSecureConnection...");
 
         setClientID();
 

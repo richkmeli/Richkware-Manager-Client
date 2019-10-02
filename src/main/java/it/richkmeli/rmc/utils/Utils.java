@@ -1,6 +1,7 @@
 package it.richkmeli.rmc.utils;
 
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -43,7 +44,7 @@ public class Utils {
 
     public static String getDeviceIdentifier() {
         String device = getHostName() + getFileSeparator() + getHostUsername();
-        Logger.i("DeviceIdentifier: " + device);
+        Logger.info("DeviceIdentifier: " + device);
         return Crypto.hash(device);
     }
 

@@ -1,8 +1,8 @@
 package it.richkmeli.rmc.controller.network;
 
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
 import it.richkmeli.rmc.swing.RichkwareCallback;
-import it.richkmeli.rmc.utils.Logger;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -41,7 +41,7 @@ public class SocketThread extends Thread {
             openSocket();
             while (open) ;
         } catch (NetworkException e) {
-            Logger.e(e.getMessage());
+            Logger.error(e.getMessage());
             callback.onFailure(e);
         }
     }
@@ -95,7 +95,7 @@ public class SocketThread extends Thread {
         try {
             String s;
             if (forceEncryption) {
-                Logger.i("I'm in SockerThread, sendCommand. Encryption.");
+                Logger.info("I'm in SockerThread, sendCommand. Encryption.");
                 // send command
                 command = Crypto.encryptRC4(command, encryptionKey);
                 outBuffer.println(command);
@@ -113,17 +113,17 @@ public class SocketThread extends Thread {
 //                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
 //                outBuffer.println(command);
             } else {
-                Logger.i("I'm in SockerThread, sendCommand. No encryption.");
+                Logger.info("I'm in SockerThread, sendCommand. No encryption.");
                 // send command
                 outBuffer.println(command);
                 // receive response
                 s = inBuffer.readLine();
-                Logger.i("s: " + s);
+                Logger.info("s: " + s);
                 while (s.compareTo("error: Malformed command") != 0) {
                     response.append(s).append("\n");
                     outBuffer.println();
                     s = inBuffer.readLine();
-                    Logger.i("s: " + s);
+                    Logger.info("s: " + s);
                 }
 //                // disconnection
 //                command = "[[0]]";

@@ -2,8 +2,8 @@ package it.richkmeli.rmc.controller.network;
 
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.crypto.exception.CryptoException;
+import it.richkmeli.jframework.util.Logger;
 import it.richkmeli.rmc.controller.NetworkCallback;
-import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.rmc.utils.ResponseParser;
 import okhttp3.*;
 import org.json.JSONObject;
@@ -11,6 +11,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Base64;
 
 /**
  * Created by richk on 17/06/17.
@@ -66,7 +67,7 @@ public class Network {
             jsonParametersString = jsonParametersString == null ? "" : jsonParametersString;
             //String encryptedParameters = cryptoClient.encrypt(params);
             // when encryption is enabled they are passed as JSON
-            Logger.i("Get request to: (decrypted) " + url + " :\"" + jsonParametersString + "\"");
+            Logger.info("Get request to: (decrypted) " + url + " :\"" + jsonParametersString + "\"");
             String encryptedParameters = null;
             try {
                 encryptedParameters = cryptoClient.encrypt(jsonParametersString);
@@ -74,7 +75,7 @@ public class Network {
                 callback.onFailure(e);
             }
 
-            Logger.i("Get request to:  (encrypted) " + url + " :\"" + encryptedParameters + "\"");
+            Logger.info("Get request to:  (encrypted) " + url + " :\"" + encryptedParameters + "\"");
             parameters = new StringBuilder("?channel=rmc&data=" + encryptedParameters);
         }
 
@@ -87,7 +88,7 @@ public class Network {
 
         Request request;
 
-        Logger.i("Get request to: " + url);
+        Logger.info("Get request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -111,7 +112,7 @@ public class Network {
                 if (ResponseParser.parseStatus(jsonResponse).equalsIgnoreCase("ok")) {
 
                     if (cryptoClient != null) {
-                        Logger.i("Get response (encrypted): " + jsonResponse);
+                        Logger.info("GET response (encrypted): " + jsonResponse);
 
                         String messageResponse = ResponseParser.parseMessage(jsonResponse);
 
@@ -127,16 +128,18 @@ public class Network {
                         json.put("message", messageResponse);
                         jsonResponse = json.toString();
 
-                        Logger.i("Get response (decrypted): " + jsonResponse);
+                        Logger.info("GET response (decrypted): " + jsonResponse);
+
+
 
                         callback.onSuccess(jsonResponse);
                     } else {
-                        Logger.i("Get response: " + jsonResponse);
+                        Logger.info("GET response: " + jsonResponse);
 
                         callback.onSuccess(jsonResponse);
                     }
                 } else {
-                    Logger.i("Get response: " + jsonResponse);
+                    Logger.info("GET response: " + jsonResponse);
 
                     callback.onFailure(new Exception(ResponseParser.parseMessage(jsonResponse)));
                 }
@@ -167,7 +170,7 @@ public class Network {
 
         Request request;
 
-        Logger.i("Get request to: " + url);
+        Logger.info("Get request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -188,7 +191,7 @@ public class Network {
                 if (response.headers().get("Set-Cookie") != null)
                     lastHeaders = response.headers();
 
-                Logger.i("Get response: " + jsonResponse);
+                Logger.info("GET response: " + jsonResponse);
 
                 callback.onSuccess(jsonResponse);
             }
@@ -231,7 +234,7 @@ public class Network {
 //
 //        Request request;
 //
-//        Logger.i("Get request to: " + url);
+//        Logger.info("Get request to: " + url);
 //
 //        if (lastHeaders != null)
 //            request = new Request.Builder()
@@ -256,7 +259,7 @@ public class Network {
 //                try {
 //
 //                    if (encryption) {
-//                        Logger.i("Get response (encrypted): " + jsonResponse);
+//                        Logger.info("GET response (encrypted): " + jsonResponse);
 //
 //                        String messageResponse = ResponseParser.parseMessage(jsonResponse);
 //
@@ -276,16 +279,16 @@ public class Network {
 //                        json.put("message", messageResponse);
 //                        jsonResponse = json.toString();
 //
-//                        Logger.i("Get response (decrypted): " + jsonResponse);
+//                        Logger.info("GET response (decrypted): " + jsonResponse);
 //
 //                        callback.onSuccess(jsonResponse);
 //                    } else {
-//                        Logger.i("Get response: " + jsonResponse);
+//                        Logger.info("GET response: " + jsonResponse);
 //
 //                        callback.onSuccess(jsonResponse);
 //                    }
 //                } catch (CryptoException e) {
-//                    Logger.e(e.getMessage());
+//                    Logger.error(e.getMessage());
 //                    callback.onFailure(new NetworkException(e));
 //                }
 //            }
@@ -314,8 +317,8 @@ public class Network {
 
         Request request;
 
-        Logger.i("Put request to: " + url);
-        Logger.i("Put body json: " + jsonParameters.toString());
+        Logger.info("Put request to: " + url);
+        Logger.info("Put body json: " + jsonParameters.toString());
 
         RequestBody body = RequestBody.create(JSON, jsonParameters.toString());
 
@@ -340,15 +343,15 @@ public class Network {
                     lastHeaders = response.headers();
 
                 if (cryptoClient != null) {
-                    Logger.i("Put response (encrypted): " + jsonResponse);
+                    Logger.info("PUT response (encrypted): " + jsonResponse);
 
                     //TODO DECRYPT
 
-                    Logger.i("Get response (decrypted): " + jsonResponse);
+                    Logger.info("PUT response (decrypted): " + jsonResponse);
 
                     callback.onSuccess(jsonResponse);
                 } else {
-                    Logger.i("Get response: " + jsonResponse);
+                    Logger.info("PUT response: " + jsonResponse);
 
                     callback.onSuccess(jsonResponse);
                 }
@@ -372,7 +375,7 @@ public class Network {
         Response response;
         Request request;
 
-        Logger.i("Request to: " + url);
+        Logger.info("Request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -399,7 +402,7 @@ public class Network {
             throw new NetworkException(e);
         }
 
-        Logger.i(responseString);
+        Logger.info(responseString);
 
         if (response.headers().get("Set-Cookie") != null)
             lastHeaders = response.headers();

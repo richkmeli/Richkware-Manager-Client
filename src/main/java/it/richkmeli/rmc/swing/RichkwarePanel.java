@@ -1,11 +1,11 @@
 package it.richkmeli.rmc.swing;
 
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
 import it.richkmeli.rmc.controller.App;
 import it.richkmeli.rmc.controller.network.NetworkException;
 import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
-import it.richkmeli.rmc.utils.Logger;
 import it.richkmeli.rmc.view.View;
 import org.json.JSONObject;
 
@@ -333,11 +333,11 @@ public class RichkwarePanel implements View {
     }
 
     private void loadConnectPanel() {
-        Logger.i("loading openSocket panel");
+        Logger.info("loading openSocket panel");
 
         connectPanel(SendCommandButton, commandToSendTextField, DeviceResponseTextArea, ConnectDevice, directCheckBox, addressOfDeviceTextField, forceEncryptionCommandCheckBox, DisconnectDevice, Connect.DEFAULT);
 
-        Logger.i("loaded openSocket panel");
+        Logger.info("loaded openSocket panel");
 
         if (SendCommandButtonReverse.getActionListeners().length == 0) {
             SendCommandButtonReverse.addActionListener(new ActionListener() {
@@ -345,7 +345,7 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     String command = CommandsTextAreaReverse.getText();
                     if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
-                        Logger.e("Write the command to execute on device");
+                        Logger.error("Write the command to execute on device");
                     } else {
                         app.getController().reverseCommand(command, false, new RichkwareCallback() {
                             @Override
@@ -367,7 +367,7 @@ public class RichkwarePanel implements View {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int devicesCount = getSelectedDeviceCount();
-                    Logger.i("connect");
+                    Logger.info("connect");
                     if (devicesCount == 1) {
                         clearTable();
                         app.getController().connectDevice(getSelectedDevice());
@@ -390,7 +390,7 @@ public class RichkwarePanel implements View {
                     app.getController().reverseCommandResponse(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            response = new String(Base64.getDecoder().decode(response));
+                            response = new String(Base64.getUrlDecoder().decode(response));
                             CommandsTextAreaReverse.setText(response);
                         }
 
@@ -449,19 +449,19 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     String command = commandToSendTextField.getText();
                     if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
-                        Logger.e("Write the command to execute on device");
+                        Logger.error("Write the command to execute on device");
                     } else {
                         app.getController().sendCommand(command, new RichkwareCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                Logger.i("Response: " + response);
+                                Logger.info("Response: " + response);
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
                             }
 
                             @Override
                             public void onFailure(String error) {
-                                Logger.e("Error: " + error);
+                                Logger.error("Error: " + error);
                             }
                         });
                     }
@@ -579,6 +579,7 @@ public class RichkwarePanel implements View {
     }
 
     private void refreshTable() {
+        // DO NOT replace with lambda
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -592,14 +593,14 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onSuccess(List<Device> response) {
                             deviceList = response;
-                            Logger.i("Devices list");
-                            for (Device device : response) {
-                                Logger.i("Device: " + device.getName());
-                            }
+//                            Logger.info("Devices list");
+//                            for (Device device : response) {
+//                                Logger.info("Device: " + device.getName());
+//                            }
                             progressBar1.setValue(20);
-                            Logger.i("Before setModel");
+                          //  Logger.info("Before setModel");
                             InfoTable.setModel(new DeviceTableModel(deviceList));
-                            Logger.i("After setModel");
+                         //   Logger.info("After setModel");
                             progressBar1.setValue(40);
 
                             updateRowHeights(InfoTable);
@@ -675,7 +676,7 @@ public class RichkwarePanel implements View {
     }
 
     private void disableInput(Connect connectionType) {
-        Logger.i("disable");
+        Logger.info("disable");
         commandToSendTextField.setEnabled(false);
         commandToSendTextFieldDirect.setEnabled(false);
         CommandsTextAreaReverse.setEnabled(false);
@@ -710,7 +711,7 @@ public class RichkwarePanel implements View {
     }
 
     private void enableInput() {
-        Logger.i("enable");
+        Logger.info("enable");
         commandToSendTextField.setEnabled(true);
         commandToSendTextFieldDirect.setEnabled(true);
         CommandsTextAreaReverse.setEnabled(true);
