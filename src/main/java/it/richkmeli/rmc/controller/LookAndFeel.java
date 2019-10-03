@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.rmc.controller;
 
 import javax.swing.*;
 import javax.swing.plaf.metal.DefaultMetalTheme;
@@ -14,22 +14,28 @@ public class LookAndFeel {
         String lookAndFeel = null;
 
         if (LOOKANDFEEL != null) {
-            if (LOOKANDFEEL.equals("Metal")) {
-                lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
-                //  an alternative way to set the Metal L&F is to replace the
-                // previous line with:
-                // lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
+            switch (LOOKANDFEEL) {
+                case "Metal":
+                    lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+                    //  an alternative way to set the Metal L&F is to replace the
+                    // previous line with:
+                    // lookAndFeel = "javax.swing.plaf.metal.MetalLookAndFeel";
 
-            } else if (LOOKANDFEEL.equals("System")) {
-                lookAndFeel = UIManager.getSystemLookAndFeelClassName();
-            } else if (LOOKANDFEEL.equals("Motif")) {
-                lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
-            } else if (LOOKANDFEEL.equals("GTK")) {
-                lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
-            } else {
-                System.err.println("Unexpected value of LOOKANDFEEL specified: "
-                        + LOOKANDFEEL);
-                lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+                    break;
+                case "System":
+                    lookAndFeel = UIManager.getSystemLookAndFeelClassName();
+                    break;
+                case "Motif":
+                    lookAndFeel = "com.sun.java.swing.plaf.motif.MotifLookAndFeel";
+                    break;
+                case "GTK":
+                    lookAndFeel = "com.sun.java.swing.plaf.gtk.GTKLookAndFeel";
+                    break;
+                default:
+                    System.err.println("Unexpected value of LOOKANDFEEL specified: "
+                            + LOOKANDFEEL);
+                    lookAndFeel = UIManager.getCrossPlatformLookAndFeelClassName();
+                    break;
             }
 
             try {

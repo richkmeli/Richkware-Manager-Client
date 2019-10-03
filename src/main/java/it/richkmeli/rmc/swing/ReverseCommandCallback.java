@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.swing;
+package it.richkmeli.rmc.swing;
 
 import java.util.Map;
 

@@ -1,6 +1,6 @@
-package it.richkmeli.RMC.swing;
+package it.richkmeli.rmc.swing;
 
-import it.richkmeli.RMC.model.Device;
+import it.richkmeli.rmc.model.Device;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -67,7 +67,7 @@ public class DeviceTableModel implements TableModel {
                 case 4:
                     return device.getEncryptionKey();
                 case 5:
-                    return device.getUserAssociated();
+                    return device.getAssociatedUser();
                 default:
                     throw new InvalidParameterException("Column Index not valid");
             }

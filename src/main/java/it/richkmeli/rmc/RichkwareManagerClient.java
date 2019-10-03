@@ -2,9 +2,9 @@
  *     Copyright 2017 Riccardo Melioli. All Rights Reserved.
  */
 
-package it.richkmeli.RMC;
+package it.richkmeli.rmc;
 
-import it.richkmeli.RMC.controller.App;
+import it.richkmeli.rmc.controller.App;
 
 public class RichkwareManagerClient {
     public static void main(String[] args) {

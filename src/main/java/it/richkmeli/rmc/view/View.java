@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.view;
+package it.richkmeli.rmc.view;
 
 /**
  * Created by richk on 16/06/17.

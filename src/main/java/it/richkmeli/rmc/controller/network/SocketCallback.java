@@ -1,4 +1,4 @@
-package it.richkmeli.RMC.controller.network;
+package it.richkmeli.rmc.controller.network;
 
 public interface SocketCallback {
 

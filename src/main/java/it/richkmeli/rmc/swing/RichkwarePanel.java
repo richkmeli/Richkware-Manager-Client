@@ -1,26 +1,32 @@
-package it.richkmeli.RMC.swing;
+package it.richkmeli.rmc.swing;
 
-import it.richkmeli.RMC.controller.App;
-import it.richkmeli.RMC.controller.network.NetworkException;
-import it.richkmeli.RMC.model.Device;
-import it.richkmeli.RMC.model.ModelException;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
-import it.richkmeli.RMC.view.View;
+import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.rmc.controller.App;
+import it.richkmeli.rmc.controller.network.NetworkException;
+import it.richkmeli.rmc.model.Device;
+import it.richkmeli.rmc.model.ModelException;
+import it.richkmeli.rmc.view.View;
+import org.json.JSONObject;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 
 public class RichkwarePanel implements View {
+    public static final String KEY_URL = "url";
+    public static final String SECUREDATA_PROTOCOLLO_KEY = "protocollo";
+    public static final String SECUREDATA_SERVER_KEY = "server";
+    public static final String SECUREDATA_PORT_KEY = "port";
+    public static final String SECUREDATA_SERVICE_KEY = "service";
+    public static final String KEY_AUTO_ESTABLISH = "autoEstablish";
     private JFrame MainFrame;
-    private JPanel LoginPanel;
     private JPasswordField passwordField;
     private JTextField emailField;
     private JTextField protocoloField;
@@ -81,6 +87,9 @@ public class RichkwarePanel implements View {
     private JButton establishSecureConnectionButton;
     private JPanel credentialPanel;
     private JPanel urlPanel;
+    private JPanel SecureConnectPanel;
+    private JPanel EstablishDeletePanel;
+    private JCheckBox autoEstablishSecureConnectionCheckBox;
     private JPanel DirectConnectPanel;
 
     private App app;
@@ -111,33 +120,77 @@ public class RichkwarePanel implements View {
         AFTER_LOGIN.setVisible(false);
         MainFrame.pack();
 
-        credentialPanel.setVisible(false);
-        deleteCryptoStateButton.setVisible(false);
+        File urlFile = new File("TestURL.txt");
+        String filePassword = "test";
+        String serverUrlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
+        boolean autoEstablish = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH).equalsIgnoreCase("true");
+        if (serverUrlJsonString.equalsIgnoreCase("") || !autoEstablish) { //PRIMA APERTURA O SENZA STATO
+            loadUrlPanel();
+        } else { // auto-establish secure connection
+            JSONObject urlJson = new JSONObject(serverUrlJsonString);
+            autoEstablishSecureConnectionCheckBox.setSelected(autoEstablish);
+            try {
+                app.getController().getNetwork().setURL(urlJson.getString(SECUREDATA_PROTOCOLLO_KEY), urlJson.getString(SECUREDATA_SERVER_KEY), urlJson.getString(SECUREDATA_PORT_KEY), urlJson.getString(SECUREDATA_SERVICE_KEY));
+                errorField.setText(" ");
+            } catch (NetworkException ex) {
+                ex.printStackTrace();
+                //TODO GESTIRE ERRORE
+            }
+            app.getController().initSecureConnection(new RichkwareCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    loadCredentialPanel();
+                    errorField.setText(" ");
+                }
+
+                @Override
+                public void onFailure(String response) {
+                    loadUrlPanel();
+                    //TODO GESTIRE ERRORE
+                    errorField.setText(response);
+                }
+            });
+        }
+
         if (establishSecureConnectionButton.getActionListeners().length == 0) {
             establishSecureConnectionButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    for (Component comp : urlPanel.getComponents()) //disable fields
+                        comp.setEnabled(false);
+                    String protocollo = protocoloField.getText();
+                    String server = serverField.getText();
+                    String port = portField.getText();
+                    String service = serviceField.getText();
                     try {
-                        app.getController().getNetwork().setURL(protocoloField.getText(), serverField.getText(), portField.getText(), serviceField.getText());
+                        app.getController().getNetwork().setURL(protocollo, server, port, service);
+                        errorField.setText(" ");
                     } catch (NetworkException ex) {
                         ex.printStackTrace();
+                        loadUrlPanel();
+                        //TODO GESTIRE ERRORE
                     }
                     app.getController().initSecureConnection(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            deleteCryptoStateButton.setVisible(true);
-                            establishSecureConnectionButton.setVisible(false);
-                            credentialPanel.setVisible(true);
-                            for (Component comp : urlPanel.getComponents())
-                                comp.setEnabled(false);
+                            //if success save url-data and load credential panel
+                            JSONObject urlJson = new JSONObject()
+                                    .put(SECUREDATA_PROTOCOLLO_KEY, protocollo)
+                                    .put(SECUREDATA_SERVER_KEY, server)
+                                    .put(SECUREDATA_PORT_KEY, port)
+                                    .put(SECUREDATA_SERVICE_KEY, service);
+                            Crypto.putData(urlFile, filePassword, KEY_URL, urlJson.toString());
+                            loadCredentialPanel();
+                            errorField.setText(" ");
                         }
 
                         @Override
                         public void onFailure(String response) {
+                            //TODO GESTIRE ERRORE
+                            loadUrlPanel();
                             errorField.setText(response);
                         }
                     });
-
                 }
             });
         }
@@ -148,22 +201,36 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent event) {
                     String email = emailField.getText();
                     String password = passwordField.getText();
-                    app.getController().login(email, password, new RichkwareCallback() {
+                    app.getController().initSecureConnection(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            errorField.setText(" ");
-                            loadDevicesPanel();
+                            app.getController().login(email, password, new RichkwareCallback() {
+                                @Override
+                                public void onSuccess(String response) {
+                                    errorField.setText(" ");
+                                    loadDevicesPanel();
+                                    errorField.setText(" ");
+                                }
+
+                                @Override
+                                public void onFailure(String response) {
+                                    errorField.setText(response);
+                                }
+                            });
                         }
 
                         @Override
                         public void onFailure(String response) {
-                            errorField.setText(ResponseParser.parseMessage(response));
-                            errorField.setVisible(true);
+                            loadCredentialPanel();
+                            // TODO GESTIRE ERRORE
+                            errorField.setText(response);
                         }
                     });
+
                 }
             });
         }
+
         if (SkipButton.getActionListeners().length == 0) {
             SkipButton.addActionListener(new ActionListener() {
                 @Override
@@ -172,13 +239,46 @@ public class RichkwarePanel implements View {
                 }
             });
         }
+        if (deleteCryptoStateButton.getActionListeners().length == 0) {
+            deleteCryptoStateButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    app.getController().deleteCryptoState();
+                    loadUrlPanel();
+                    errorField.setText(" ");
+                }
+            });
+        }
+        if (autoEstablishSecureConnectionCheckBox.getItemListeners().length == 0) {
+            autoEstablishSecureConnectionCheckBox.addItemListener(new ItemListener() {
+                @Override
+                public void itemStateChanged(ItemEvent e) {
+                    if (e.getStateChange() == ItemEvent.SELECTED) {
+                        Crypto.putData(urlFile, filePassword, KEY_AUTO_ESTABLISH, "true");
+                    } else {
+                        Crypto.putData(urlFile, filePassword, KEY_AUTO_ESTABLISH, "false");
+                    }
+                }
+            });
+        }
+    }
 
-        deleteCryptoStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                app.getController().deleteCryptoState();
-            }
-        });
+    private void loadUrlPanel() {
+        credentialPanel.setVisible(false);
+        for (Component comp : urlPanel.getComponents())
+            comp.setEnabled(true);
+        urlPanel.setVisible(true);
+        establishSecureConnectionButton.setVisible(true);
+        SecureConnectPanel.setBorder(new TitledBorder(new LineBorder(Color.RED, 2), "SecureConnection", TitledBorder.LEFT, TitledBorder.TOP));
+        MainFrame.pack();
+    }
+
+    private void loadCredentialPanel() {
+        credentialPanel.setVisible(true);
+        urlPanel.setVisible(false);
+        establishSecureConnectionButton.setVisible(false);
+        SecureConnectPanel.setBorder(new TitledBorder(new LineBorder(Color.GREEN, 2), "SecureConnection", TitledBorder.LEFT, TitledBorder.TOP));
+        MainFrame.pack();
     }
 
     private void loadDevicesPanel() {
@@ -233,11 +333,11 @@ public class RichkwarePanel implements View {
     }
 
     private void loadConnectPanel() {
-        Logger.i("loading openSocket panel");
+        Logger.info("loading openSocket panel");
 
         connectPanel(SendCommandButton, commandToSendTextField, DeviceResponseTextArea, ConnectDevice, directCheckBox, addressOfDeviceTextField, forceEncryptionCommandCheckBox, DisconnectDevice, Connect.DEFAULT);
 
-        Logger.i("loaded openSocket panel");
+        Logger.info("loaded openSocket panel");
 
         if (SendCommandButtonReverse.getActionListeners().length == 0) {
             SendCommandButtonReverse.addActionListener(new ActionListener() {
@@ -245,7 +345,7 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     String command = CommandsTextAreaReverse.getText();
                     if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
-                        Logger.e("Write the command to execute on device");
+                        Logger.error("Write the command to execute on device");
                     } else {
                         app.getController().reverseCommand(command, false, new RichkwareCallback() {
                             @Override
@@ -267,10 +367,11 @@ public class RichkwarePanel implements View {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     int devicesCount = getSelectedDeviceCount();
-                    Logger.i("connect");
+                    Logger.info("connect");
                     if (devicesCount == 1) {
                         clearTable();
                         app.getController().connectDevice(getSelectedDevice());
+
                         enableInput();
                     } else if (devicesCount > 1) {
                         clearTable();
@@ -286,10 +387,10 @@ public class RichkwarePanel implements View {
             ReceiveResponseButtonReverse.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    app.getController().reverseCommandResponse(device, new RichkwareCallback() {
+                    app.getController().reverseCommandResponse(new RichkwareCallback() {
                         @Override
                         public void onSuccess(String response) {
-                            response = new String(Base64.getDecoder().decode(ResponseParser.parseMessage(response)));
+                            response = new String(Base64.getUrlDecoder().decode(response));
                             CommandsTextAreaReverse.setText(response);
                         }
 
@@ -334,7 +435,10 @@ public class RichkwarePanel implements View {
         JOptionPane.showMessageDialog(MainFrame, err, "Error", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void connectPanel(JButton SendCommandButton, JTextField commandToSendTextField, JTextArea DeviceResponseTextArea, JButton ConnectDevice, JCheckBox directCheckBox, JTextField addressOfDeviceTextField, JCheckBox forceEncryptionCommandCheckBox, JButton DisconnectDevice, Connect connetionType) {
+    private void connectPanel(JButton SendCommandButton, JTextField commandToSendTextField, JTextArea
+            DeviceResponseTextArea, JButton ConnectDevice, JCheckBox directCheckBox, JTextField
+                                      addressOfDeviceTextField, JCheckBox forceEncryptionCommandCheckBox, JButton DisconnectDevice, Connect
+                                      connetionType) {
         devices = new ArrayList<>();
 
         disableInput(connetionType);
@@ -345,19 +449,19 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     String command = commandToSendTextField.getText();
                     if (command.compareTo("") == 0 || command.compareTo("Command to send") == 0) {
-                        Logger.e("Write the command to execute on device");
+                        Logger.error("Write the command to execute on device");
                     } else {
                         app.getController().sendCommand(command, new RichkwareCallback() {
                             @Override
                             public void onSuccess(String response) {
-                                Logger.i("Response: " + response);
+                                Logger.info("Response: " + response);
                                 DeviceResponseTextArea.append(response);
                                 DeviceResponseTextArea.setLineWrap(true);
                             }
 
                             @Override
                             public void onFailure(String error) {
-                                Logger.e("Error: " + error);
+                                Logger.error("Error: " + error);
                             }
                         });
                     }
@@ -371,7 +475,7 @@ public class RichkwarePanel implements View {
                 public void actionPerformed(ActionEvent e) {
                     if (directCheckBox.isSelected()) { //Direct command to selected devices from table
                         String ipport = addressOfDeviceTextField.getText();
-                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1), "", "", "");
+                        device = new Device("", ipport.substring(0, ipport.indexOf(":")), ipport.substring(ipport.indexOf(":") + 1), "", "", "", "", "");
                         app.getController().openSocket(device, forceEncryptionCommandCheckBox.isSelected(), new RichkwareCallback() {
                             @Override
                             public void onSuccess(String response) {
@@ -412,7 +516,7 @@ public class RichkwarePanel implements View {
                             app.getController().openSocket(devices, forceEncryptionCommandCheckBox.isSelected(), new RichkwareCallback() {
                                 @Override
                                 public void onSuccess(String response) {
-                                    addressOfDeviceTextField.setText("Multiple devies");
+                                    addressOfDeviceTextField.setText("Multiple devices");
                                     enableInput();
                                 }
 
@@ -475,10 +579,13 @@ public class RichkwarePanel implements View {
     }
 
     private void refreshTable() {
+        // DO NOT replace with lambda
         Thread t = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
+                    //TODO si può anche rimuovere
+                    InfoTable.setModel(new DeviceTableModel(new ArrayList<>()));
                     progressBar1.setValue(0);
 
                     // if encryption check box is selected, RMC uses encryption to refresh the list of devices
@@ -486,8 +593,14 @@ public class RichkwarePanel implements View {
                         @Override
                         public void onSuccess(List<Device> response) {
                             deviceList = response;
+//                            Logger.info("Devices list");
+//                            for (Device device : response) {
+//                                Logger.info("Device: " + device.getName());
+//                            }
                             progressBar1.setValue(20);
+                          //  Logger.info("Before setModel");
                             InfoTable.setModel(new DeviceTableModel(deviceList));
+                         //   Logger.info("After setModel");
                             progressBar1.setValue(40);
 
                             updateRowHeights(InfoTable);
@@ -563,7 +676,7 @@ public class RichkwarePanel implements View {
     }
 
     private void disableInput(Connect connectionType) {
-        Logger.i("disable");
+        Logger.info("disable");
         commandToSendTextField.setEnabled(false);
         commandToSendTextFieldDirect.setEnabled(false);
         CommandsTextAreaReverse.setEnabled(false);
@@ -598,7 +711,7 @@ public class RichkwarePanel implements View {
     }
 
     private void enableInput() {
-        Logger.i("enable");
+        Logger.info("enable");
         commandToSendTextField.setEnabled(true);
         commandToSendTextFieldDirect.setEnabled(true);
         CommandsTextAreaReverse.setEnabled(true);

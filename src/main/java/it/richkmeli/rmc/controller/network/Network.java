@@ -1,26 +1,17 @@
-package it.richkmeli.RMC.controller.network;
+package it.richkmeli.rmc.controller.network;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import it.richkmeli.RMC.controller.NetworkCallback;
-import it.richkmeli.RMC.utils.Logger;
-import it.richkmeli.RMC.utils.ResponseParser;
 import it.richkmeli.jframework.crypto.Crypto;
-import it.richkmeli.jframework.crypto.CryptoCompat;
-import it.richkmeli.jframework.crypto.KeyExchangePayloadCompat;
 import it.richkmeli.jframework.crypto.exception.CryptoException;
+import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.rmc.controller.NetworkCallback;
+import it.richkmeli.rmc.utils.ResponseParser;
 import okhttp3.*;
 import org.json.JSONObject;
 
-import javax.crypto.SecretKey;
 import java.io.IOException;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.GeneralSecurityException;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.util.Base64;
 
 /**
  * Created by richk on 17/06/17.
@@ -45,6 +36,10 @@ public class Network {
         }
     }
 
+    public void deleteSession() {
+        lastHeaders = null;
+    }
+
     public void openSocket(String ip, String port, String encryptionKey, boolean forceEncryption, SocketCallback callback) {
         SocketThread socketThread = new SocketThread(ip, port, encryptionKey, forceEncryption, callback);
         socketThread.start();
@@ -55,7 +50,7 @@ public class Network {
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
             JSONObject jsonParameters = new JSONObject(jsonParametersString);
             for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
             }
         }
 
@@ -72,10 +67,16 @@ public class Network {
             jsonParametersString = jsonParametersString == null ? "" : jsonParametersString;
             //String encryptedParameters = cryptoClient.encrypt(params);
             // when encryption is enabled they are passed as JSON
-            String encryptedParameters = cryptoClient.encrypt(jsonParametersString);
+            Logger.info("Get request to: (decrypted) " + url + " :\"" + jsonParametersString + "\"");
+            String encryptedParameters = null;
+            try {
+                encryptedParameters = cryptoClient.encrypt(jsonParametersString);
+            } catch (CryptoException e) {
+                callback.onFailure(e);
+            }
 
-            Logger.i("Get request to: " + url + " :\"" + encryptedParameters + "\"");
-            parameters = new StringBuilder("?encryption=true&data=" + encryptedParameters);
+            Logger.info("Get request to:  (encrypted) " + url + " :\"" + encryptedParameters + "\"");
+            parameters = new StringBuilder("?channel=rmc&data=" + encryptedParameters);
         }
 
 //        URL url = null;
@@ -87,7 +88,7 @@ public class Network {
 
         Request request;
 
-        Logger.i("Get request to: " + url);
+        Logger.info("Get request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -108,29 +109,39 @@ public class Network {
                 if (response.headers().get("Set-Cookie") != null)
                     lastHeaders = response.headers();
 
-                if (cryptoClient != null) {
-                    Logger.i("Get response (encrypted): " + jsonResponse);
+                if (ResponseParser.parseStatus(jsonResponse).equalsIgnoreCase("ok")) {
 
-                    String messageResponse = ResponseParser.parseMessage(jsonResponse);
+                    if (cryptoClient != null) {
+                        Logger.info("GET response (encrypted): " + jsonResponse);
 
-                    //TODO boolean decryptResponse param
-//                        if(decryptResponse){
-                    messageResponse = cryptoClient.decrypt(messageResponse);
-//                        }
+                        String messageResponse = ResponseParser.parseMessage(jsonResponse);
 
-                    //CREATE new JSON
-                    JSONObject json = new JSONObject(jsonResponse);
-                    json.remove("message");
-                    json.put("message", messageResponse);
-                    jsonResponse = json.toString();
+                        try {
+                            messageResponse = cryptoClient.decrypt(messageResponse);
+                        } catch (CryptoException e) {
+                            callback.onFailure(e);
+                        }
 
-                    Logger.i("Get response (decrypted): " + jsonResponse);
+                        //CREATE new JSON
+                        JSONObject json = new JSONObject(jsonResponse);
+                        json.remove("message");
+                        json.put("message", messageResponse);
+                        jsonResponse = json.toString();
 
-                    callback.onSuccess(jsonResponse);
+                        Logger.info("GET response (decrypted): " + jsonResponse);
+
+
+
+                        callback.onSuccess(jsonResponse);
+                    } else {
+                        Logger.info("GET response: " + jsonResponse);
+
+                        callback.onSuccess(jsonResponse);
+                    }
                 } else {
-                    Logger.i("Get response: " + jsonResponse);
+                    Logger.info("GET response: " + jsonResponse);
 
-                    callback.onSuccess(jsonResponse);
+                    callback.onFailure(new Exception(ResponseParser.parseMessage(jsonResponse)));
                 }
             }
 
@@ -146,7 +157,7 @@ public class Network {
         if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
             JSONObject jsonParameters = new JSONObject(jsonParametersString);
             for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
+                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
             }
         }
 
@@ -159,7 +170,7 @@ public class Network {
 
         Request request;
 
-        Logger.i("Get request to: " + url);
+        Logger.info("Get request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -180,7 +191,7 @@ public class Network {
                 if (response.headers().get("Set-Cookie") != null)
                     lastHeaders = response.headers();
 
-                Logger.i("Get response: " + jsonResponse);
+                Logger.info("GET response: " + jsonResponse);
 
                 callback.onSuccess(jsonResponse);
             }
@@ -192,102 +203,102 @@ public class Network {
         });
     }
 
-    public void getRequestCompat(String servlet, String jsonParametersString, boolean encryption, NetworkCallback callback) {
-        StringBuilder parameters = new StringBuilder("?");
-        if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
-            JSONObject jsonParameters = new JSONObject(jsonParametersString);
-            for (String key : jsonParameters.keySet()) {
-                parameters.append("&").append(key + "=" + jsonParameters.get(key));
-            }
-        }
-
-        PrivateKey RSAprivateKeyClient = null;
-        try {
-            if (encryption) {
-                KeyPair keyPair = CryptoCompat.getGeneratedKeyPairRSA();
-                PublicKey RSApublicKeyClient = keyPair.getPublic();
-                RSAprivateKeyClient = keyPair.getPrivate();
-
-                parameters.append("?&encryption=true&Kpub=" + CryptoCompat.savePublicKey(RSApublicKeyClient));
-            }
-        } catch (GeneralSecurityException | CryptoException e) {
-            callback.onFailure(new NetworkException(e));
-        }
-
-        URL url = null;
-        try {
-            url = new URL(this.url + servlet + parameters);
-        } catch (MalformedURLException e) {
-            callback.onFailure(new NetworkException(e));
-        }
-
-        Request request;
-
-        Logger.i("Get request to: " + url);
-
-        if (lastHeaders != null)
-            request = new Request.Builder()
-                    .url(url)
-                    .addHeader("Cookie", lastHeaders.get("Set-Cookie"))
-                    .get()
-                    .build();
-        else
-            request = new Request.Builder()
-                    .url(url)
-                    .get()
-                    .build();
-
-        PrivateKey finalRSAprivateKeyClient = RSAprivateKeyClient;
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                String jsonResponse = response.body().string().trim();
-                if (response.headers().get("Set-Cookie") != null)
-                    lastHeaders = response.headers();
-
-                try {
-
-                    if (encryption) {
-                        Logger.i("Get response (encrypted): " + jsonResponse);
-
-                        String messageResponse = ResponseParser.parseMessage(jsonResponse);
-
-                        Type listType = new TypeToken<KeyExchangePayloadCompat>() {
-                        }.getType();
-                        Gson gson = new Gson();
-                        KeyExchangePayloadCompat keyExchangePayload = gson.fromJson(messageResponse, listType);
-
-                        SecretKey AESsecretKey = CryptoCompat.getAESKeyFromKeyExchange(keyExchangePayload, finalRSAprivateKeyClient);
-                        String data = keyExchangePayload.getData();
-
-                        messageResponse = CryptoCompat.decryptRC4(data, new String(AESsecretKey.getEncoded()));
-
-                        //CREATE new JSON
-                        JSONObject json = new JSONObject(jsonResponse);
-                        json.remove("message");
-                        json.put("message", messageResponse);
-                        jsonResponse = json.toString();
-
-                        Logger.i("Get response (decrypted): " + jsonResponse);
-
-                        callback.onSuccess(jsonResponse);
-                    } else {
-                        Logger.i("Get response: " + jsonResponse);
-
-                        callback.onSuccess(jsonResponse);
-                    }
-                } catch (CryptoException e) {
-                    Logger.e(e.getMessage());
-                    callback.onFailure(new NetworkException(e));
-                }
-            }
-
-            @Override
-            public void onFailure(Call call, IOException e) {
-                callback.onFailure(new NetworkException(e));
-            }
-        });
-    }
+//    public void getRequestCompat(String servlet, String jsonParametersString, boolean encryption, NetworkCallback callback) {
+//        StringBuilder parameters = new StringBuilder("?");
+//        if (jsonParametersString != null && !jsonParametersString.isEmpty()) {
+//            JSONObject jsonParameters = new JSONObject(jsonParametersString);
+//            for (String key : jsonParameters.keySet()) {
+//                parameters.append("&").append(key).append("=").append(jsonParameters.get(key));
+//            }
+//        }
+//
+//        PrivateKey RSAprivateKeyClient = null;
+//        try {
+//            if (encryption) {
+//                KeyPair keyPair = CryptoCompat.getGeneratedKeyPairRSA();
+//                PublicKey RSApublicKeyClient = keyPair.getPublic();
+//                RSAprivateKeyClient = keyPair.getPrivate();
+//
+//                parameters.append("?&encryption=true&Kpub=").append(CryptoCompat.savePublicKey(RSApublicKeyClient));
+//            }
+//        } catch (GeneralSecurityException | CryptoException e) {
+//            callback.onFailure(new NetworkException(e));
+//        }
+//
+//        URL url = null;
+//        try {
+//            url = new URL(this.url + servlet + parameters);
+//        } catch (MalformedURLException e) {
+//            callback.onFailure(new NetworkException(e));
+//        }
+//
+//        Request request;
+//
+//        Logger.info("Get request to: " + url);
+//
+//        if (lastHeaders != null)
+//            request = new Request.Builder()
+//                    .url(url)
+//                    .addHeader("Cookie", lastHeaders.get("Set-Cookie"))
+//                    .get()
+//                    .build();
+//        else
+//            request = new Request.Builder()
+//                    .url(url)
+//                    .get()
+//                    .build();
+//
+//        PrivateKey finalRSAprivateKeyClient = RSAprivateKeyClient;
+//        client.newCall(request).enqueue(new Callback() {
+//            @Override
+//            public void onResponse(Call call, Response response) throws IOException {
+//                String jsonResponse = response.body().string().trim();
+//                if (response.headers().get("Set-Cookie") != null)
+//                    lastHeaders = response.headers();
+//
+//                try {
+//
+//                    if (encryption) {
+//                        Logger.info("GET response (encrypted): " + jsonResponse);
+//
+//                        String messageResponse = ResponseParser.parseMessage(jsonResponse);
+//
+//                        Type listType = new TypeToken<KeyExchangePayloadCompat>() {
+//                        }.getType();
+//                        Gson gson = new Gson();
+//                        KeyExchangePayloadCompat keyExchangePayload = gson.fromJson(messageResponse, listType);
+//
+//                        SecretKey AESsecretKey = CryptoCompat.getAESKeyFromKeyExchange(keyExchangePayload, finalRSAprivateKeyClient);
+//                        String data = keyExchangePayload.getData();
+//
+//                        messageResponse = CryptoCompat.decryptRC4(data, new String(AESsecretKey.getEncoded()));
+//
+//                        //CREATE new JSON
+//                        JSONObject json = new JSONObject(jsonResponse);
+//                        json.remove("message");
+//                        json.put("message", messageResponse);
+//                        jsonResponse = json.toString();
+//
+//                        Logger.info("GET response (decrypted): " + jsonResponse);
+//
+//                        callback.onSuccess(jsonResponse);
+//                    } else {
+//                        Logger.info("GET response: " + jsonResponse);
+//
+//                        callback.onSuccess(jsonResponse);
+//                    }
+//                } catch (CryptoException e) {
+//                    Logger.error(e.getMessage());
+//                    callback.onFailure(new NetworkException(e));
+//                }
+//            }
+//
+//            @Override
+//            public void onFailure(Call call, IOException e) {
+//                callback.onFailure(new NetworkException(e));
+//            }
+//        });
+//    }
 
     public void putRequest(String servlet, String jsonParamentesString, Crypto.Client cryptoClient, NetworkCallback callback) {
 
@@ -306,8 +317,8 @@ public class Network {
 
         Request request;
 
-        Logger.i("Put request to: " + url);
-        Logger.i("Put body json: " + jsonParameters.toString());
+        Logger.info("Put request to: " + url);
+        Logger.info("Put body json: " + jsonParameters.toString());
 
         RequestBody body = RequestBody.create(JSON, jsonParameters.toString());
 
@@ -332,15 +343,15 @@ public class Network {
                     lastHeaders = response.headers();
 
                 if (cryptoClient != null) {
-                    Logger.i("Put response (encrypted): " + jsonResponse);
+                    Logger.info("PUT response (encrypted): " + jsonResponse);
 
                     //TODO DECRYPT
 
-                    Logger.i("Get response (decrypted): " + jsonResponse);
+                    Logger.info("PUT response (decrypted): " + jsonResponse);
 
                     callback.onSuccess(jsonResponse);
                 } else {
-                    Logger.i("Get response: " + jsonResponse);
+                    Logger.info("PUT response: " + jsonResponse);
 
                     callback.onSuccess(jsonResponse);
                 }
@@ -364,7 +375,7 @@ public class Network {
         Response response;
         Request request;
 
-        Logger.i("Request to: " + url);
+        Logger.info("Request to: " + url);
 
         if (lastHeaders != null)
             request = new Request.Builder()
@@ -391,12 +402,13 @@ public class Network {
             throw new NetworkException(e);
         }
 
-        Logger.i(responseString);
+        Logger.info(responseString);
 
         if (response.headers().get("Set-Cookie") != null)
             lastHeaders = response.headers();
 
         return responseString;
     }
+
 }
 
