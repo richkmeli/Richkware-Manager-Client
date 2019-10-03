@@ -13,11 +13,11 @@ Client of **Richkware-Manager-Server**, that it obtains the list of all hosts fr
 
 ## GUI
 
-![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_secureconnection.PNG)
+![Secure Connection](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_secureconnection.PNG)
 
-![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_login.PNG)
+![Login](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_login.PNG)
 
-![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/rmc.png)
+![Reverse Commands](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_reversecommands.PNG)
 
 ## Get Started
 
@@ -34,4 +34,4 @@ To compile the project and generate the jar file, you have to run:
     
 After the generation of the jar file, located in the folder "target", you can open the GUI, executing the following command:
 
-    java -jar target/RichkwareManagerClient-1.0-jar-with-dependencies.jar
+    java -jar target/RichkwareManagerClient-XXX-jar-with-dependencies.jar
