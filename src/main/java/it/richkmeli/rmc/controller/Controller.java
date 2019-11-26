@@ -3,15 +3,17 @@ package it.richkmeli.rmc.controller;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import it.richkmeli.jframework.crypto.Crypto;
+import it.richkmeli.jframework.network.tcp.client.okhttp.Network;
+import it.richkmeli.jframework.network.tcp.client.okhttp.NetworkCallback;
+import it.richkmeli.jframework.network.tcp.client.okhttp.util.ResponseParser;
 import it.richkmeli.jframework.util.Logger;
-import it.richkmeli.rmc.controller.network.Network;
-import it.richkmeli.rmc.controller.network.SocketCallback;
-import it.richkmeli.rmc.controller.network.SocketThread;
 import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
+import it.richkmeli.rmc.network.SocketCallback;
+import it.richkmeli.rmc.network.SocketManager;
+import it.richkmeli.rmc.network.SocketThread;
 import it.richkmeli.rmc.swing.ListCallback;
 import it.richkmeli.rmc.swing.RichkwareCallback;
-import it.richkmeli.rmc.utils.ResponseParser;
 import it.richkmeli.rmc.utils.Utils;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -49,7 +51,7 @@ public class Controller {
         payload.put("email", email);
         payload.put("password", Crypto.hashPassword(password, true));
 
-        network.getRequest("LogIn", payload.toString(), cryptoClient, new NetworkCallback() {
+        network.getRequest("LogIn", payload.toString(),"channel=rmc", cryptoClient, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -66,7 +68,7 @@ public class Controller {
     }
 
     public void logout(Boolean encryption, RichkwareCallback callback) {
-        network.getRequest("LogOut", null, encryption ? cryptoClient : null, new NetworkCallback() {
+        network.getRequest("LogOut", null,"channel=rmc", encryption ? cryptoClient : null, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -83,7 +85,7 @@ public class Controller {
     }
 
     public void userStatus(Boolean encryption, RichkwareCallback callback) {
-        network.getRequest("user", null, encryption ? cryptoClient : null, new NetworkCallback() {
+        network.getRequest("user", null,"channel=rmc", encryption ? cryptoClient : null, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -103,7 +105,7 @@ public class Controller {
         String sDevicesList = null;
         Gson gson = new Gson();
 
-        network.getRequest("devicesList", null, encryption ? cryptoClient : null, new NetworkCallback() {
+        network.getRequest("devicesList", null,"channel=rmc", encryption ? cryptoClient : null, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response)) {
@@ -233,7 +235,7 @@ public class Controller {
 
         jsonParameters.put("data0", devicesList.get(0));
         //TODO encryption
-        network.getRequest("command", jsonParameters.toString(), cryptoClient, new NetworkCallback() {
+        network.getRequest("command", jsonParameters.toString(),"channel=rmc", cryptoClient, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response))
@@ -251,7 +253,7 @@ public class Controller {
 
     public void openSocket(Device device, boolean forceEncryption, RichkwareCallback callback) {
         devicesMap = new HashMap<>();
-        network.openSocket(device.getIp(), device.getServerPort(), device.getEncryptionKey(), forceEncryption, new SocketCallback() {
+        SocketManager.openSocket(device.getIp(), device.getServerPort(), device.getEncryptionKey(), forceEncryption, new SocketCallback() {
             @Override
             public void onSuccess(SocketThread socketThread) {
                 devicesMap.put(device, socketThread);
@@ -301,7 +303,7 @@ public class Controller {
 
         Logger.info("clientState: " + clientState);
 
-        getNetwork().getRequestCompat("secureConnection", parametersJson.toString(), new NetworkCallback() {
+        getNetwork().getRequestCompat("SecureConnection", parametersJson.toString(), new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (attempt < SECURE_CONNECTION_MAX_ATTEMPT) {

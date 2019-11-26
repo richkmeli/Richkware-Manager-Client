@@ -1,6 +1,6 @@
 package it.richkmeli.rmc.swing;
 
-public interface RichkwareCallback {
+public interface RichkwareCallback{
 
     void onSuccess(String response);
 

@@ -1,4 +1,4 @@
-package it.richkmeli.rmc.controller.network;
+package it.richkmeli.rmc.network;
 
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.util.Logger;
@@ -40,18 +40,18 @@ public class SocketThread extends Thread {
         try {
             openSocket();
             while (open) ;
-        } catch (NetworkException e) {
+        } catch (SocketException e) {
             Logger.error(e.getMessage());
             callback.onFailure(e);
         }
     }
 
-    private void openSocket() throws NetworkException {
+    private void openSocket() throws SocketException {
         InetAddress receiverIP = null;
         try {
             receiverIP = InetAddress.getByName(ip);
         } catch (UnknownHostException e) {
-            throw new NetworkException(e);
+            throw new SocketException(e);
         }
         talkSocket = null;
         try {
@@ -82,10 +82,10 @@ public class SocketThread extends Thread {
             } else if (s.compareTo("Connection Established") == 0) {
                 callback.onSuccess(this);
             } else {
-                callback.onFailure(new NetworkException(new Exception(s)));
+                callback.onFailure(new SocketException(new Exception(s)));
             }
         } catch (IOException e) {
-            throw new NetworkException(e);
+            throw new SocketException(e);
         }
     }
 
