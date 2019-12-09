@@ -75,6 +75,8 @@ public class Controller {
                     callback.onSuccess(ResponseParser.parseMessage(response));
                 else
                     callback.onFailure(ResponseParser.parseMessage(response));
+
+                network.deleteSession();
             }
 
             @Override
