@@ -107,7 +107,7 @@ public class Controller {
         String sDevicesList = null;
         Gson gson = new Gson();
 
-        network.getRequest("devicesList", null,"channel=rmc", encryption ? cryptoClient : null, new NetworkCallback() {
+        network.getRequest("devices", null,"channel=rmc", encryption ? cryptoClient : null, new NetworkCallback() {
             @Override
             public void onSuccess(String response) {
                 if (ResponseParser.isStatusOK(response)) {
