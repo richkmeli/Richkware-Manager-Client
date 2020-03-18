@@ -3,17 +3,20 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+    <groupId>it.richkmeli.rmc</groupId>
+    <artifactId>Richkware-Manager-Client</artifactId>
+    <version>1.1.1</version>
 
     <repositories>
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
+        <repository>
+            <id>github</id>
+            <url>https://maven.pkg.github.com/richkmeli/JFramework</url>
+        </repository>
     </repositories>
-
-    <groupId>it.richkmeli.rmc</groupId>
-    <artifactId>Richkware-Manager-Client</artifactId>
-    <version>1.1.1</version>
 
     <build>
         <plugins>
@@ -73,10 +76,9 @@
     <dependencies>
 
         <dependency>
-            <!--<groupId>it.richkmeli.jframework</groupId>-->
-            <groupId>com.github.richkmeli</groupId>
+            <groupId>it.richkmeli.jframework</groupId>
             <artifactId>JFramework</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.bouncycastle</groupId>
