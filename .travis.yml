@@ -9,4 +9,5 @@ install:
   - mvn package
 
 script:
-  - java -cp target/* it.richkmeli.rmc.RichkwareManagerClient
+  - cd target
+  - java -cp * it.richkmeli.rmc.RichkwareManagerClient
