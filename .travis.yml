@@ -1,2 +1,12 @@
 language: java
-script: mvn clean install
+
+before_install:
+  - sudo apt-get update
+  - cp .travis.settings.xml $HOME/.m2/settings.xml
+
+install:
+  - mvn clean install
+  - mvn package
+
+script:
+  - java -cp * it.richkmeli.rmc.RichkwareManagerClient
