@@ -6,7 +6,7 @@ import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.network.tcp.client.okhttp.Network;
 import it.richkmeli.jframework.network.tcp.client.okhttp.NetworkCallback;
 import it.richkmeli.jframework.network.tcp.client.okhttp.util.ResponseParser;
-import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.jframework.util.log.Logger;
 import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
 import it.richkmeli.rmc.network.SocketCallback;
@@ -78,7 +78,6 @@ public class Controller {
 
                 network.deleteSession();
             }
-
             @Override
             public void onFailure(Exception e) {
                 callback.onFailure(e.getMessage());

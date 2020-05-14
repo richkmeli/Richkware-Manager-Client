@@ -1,7 +1,7 @@
 package it.richkmeli.rmc.utils;
 
 import it.richkmeli.jframework.crypto.Crypto;
-import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.jframework.util.log.Logger;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

@@ -1,7 +1,8 @@
 package it.richkmeli.rmc.network;
 
 import it.richkmeli.jframework.crypto.Crypto;
-import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.jframework.crypto.exception.CryptoException;
+import it.richkmeli.jframework.util.log.Logger;
 import it.richkmeli.rmc.swing.RichkwareCallback;
 
 import java.io.*;
@@ -129,7 +130,7 @@ public class SocketThread extends Thread {
 //                command = "[[0]]";
 //                outBuffer.println(command);
             }
-        } catch (IOException e) {
+        } catch (IOException | CryptoException e) {
             callback.onFailure(e.getMessage());
         }
         callback.onSuccess(response.toString());

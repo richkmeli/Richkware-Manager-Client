@@ -2,7 +2,7 @@ package it.richkmeli.rmc.swing;
 
 import it.richkmeli.jframework.crypto.Crypto;
 import it.richkmeli.jframework.network.tcp.client.okhttp.NetworkException;
-import it.richkmeli.jframework.util.Logger;
+import it.richkmeli.jframework.util.log.Logger;
 import it.richkmeli.rmc.controller.App;
 import it.richkmeli.rmc.model.Device;
 import it.richkmeli.rmc.model.ModelException;
