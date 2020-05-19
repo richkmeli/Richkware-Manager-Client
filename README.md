@@ -38,3 +38,10 @@ To compile the project and generate the jar file, you have to run:
 After the generation of the jar file, located in the folder "target", you can open the GUI, executing the following command:
 
     java -jar target/RichkwareManagerClient-XXX-jar-with-dependencies.jar
+
+## IDE
+
+This project is developed with Intellij IDEA.
+[Open Sources Licences](https://www.jetbrains.com/opensource/) provided by JetBrains.
+
+<img src="https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Jetbrains/jetbrains.svg" width="100" alt="Jetbrains Logo"/>
