@@ -120,11 +120,11 @@ public class RichkwarePanel implements View {
         AFTER_LOGIN.setVisible(false);
         MainFrame.pack();
 
-        File urlFile = new File("TestURL.txt");
+        File urlFile = new File("url.conf");
         String filePassword = "test";
         String serverUrlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
         boolean autoEstablish = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH).equalsIgnoreCase("true");
-        if (serverUrlJsonString.equalsIgnoreCase("") || !autoEstablish) { //PRIMA APERTURA O SENZA STATO
+        if (serverUrlJsonString.equalsIgnoreCase("") || !autoEstablish) { // PRIMA APERTURA O SENZA STATO
             loadUrlPanel();
         } else { // auto-establish secure connection
             JSONObject urlJson = new JSONObject(serverUrlJsonString);

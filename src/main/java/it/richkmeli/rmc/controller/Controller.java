@@ -352,7 +352,7 @@ public class Controller {
         // re-init to allow a connection to a different server
         cryptoClient = new Crypto.Client();
 
-        File secureDataClient = new File("TESTsecureDataClient.txt");
+        File secureDataClient = new File("secureDataClient.txt");
         String clientKey = "testkeyClient";
         String serverResponse = "";
 
