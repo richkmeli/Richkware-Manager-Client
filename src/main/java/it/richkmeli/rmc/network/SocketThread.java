@@ -96,7 +96,7 @@ public class SocketThread extends Thread {
         try {
             String s;
             if (forceEncryption) {
-                Logger.info("I'm in SockerThread, sendCommand. Encryption.");
+                Logger.info("SocketThread, sendCommand. Encryption.");
                 // send command
                 command = Crypto.encryptRC4(command, encryptionKey);
                 outBuffer.println(command);
@@ -114,7 +114,7 @@ public class SocketThread extends Thread {
 //                command = Crypto.EncryptRC4("[[0]]", encryptionKey);
 //                outBuffer.println(command);
             } else {
-                Logger.info("I'm in SockerThread, sendCommand. No encryption.");
+                Logger.info("SocketThread, sendCommand. No encryption.");
                 // send command
                 outBuffer.println(command);
                 // receive response
