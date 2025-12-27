@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="maven-antrun-" default="main">
+  <target name="main">
+    <path id="maven.plugin.complete.classpath">
+      <path refid="maven.plugin.classpath" />
+      <fileset dir="/home/richk/Projects/Richkware-Manager-Client/target">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
+    <taskdef classname="com.intellij.ant.Javac2" name="javac2" classpathref="maven.plugin.complete.classpath" />
+    <javac2 includeantruntime="false" destdir="/home/richk/Projects/Richkware-Manager-Client/target/classes">
+      <src path="/home/richk/Projects/Richkware-Manager-Client/src/main/java" />
+      <classpath>
+        <path refid="maven.compile.classpath" />
+        <path refid="maven.plugin.classpath" />
+      </classpath>
+    </javac2>
+  </target>
+</project>

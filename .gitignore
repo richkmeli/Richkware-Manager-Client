@@ -18,3 +18,7 @@ RichkwareManagerClient/src/test/
 RichkwareManagerClient/target/
 
 *.iml
+rmc_log.txt
+secureData*.txt
+rmc_log.txt
+logfile.txt
