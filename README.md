@@ -4,7 +4,7 @@
 [![](https://jitpack.io/v/richkmeli/Richkware-Manager-Client.svg)](https://jitpack.io/#richkmeli/Richkware-Manager-Client)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/941c900cff06436ab420754cd5bfa26b)](https://app.codacy.com/app/richkmeli/Richkware-Manager-Client?utm_source=github.com&utm_medium=referral&utm_content=richkmeli/Richkware-Manager-Client&utm_campaign=Badge_Grade_Dashboard)
 
-Client of **Richkware-Manager-Server**, that it obtains the list of all hosts from the server and it's able to send any kind of commands to them.
+Client for **Richkware-Manager-Server**, which obtains the list of all hosts from the server and is able to send any kind of commands to them.
 
 ## Related Projects
 
@@ -24,9 +24,9 @@ Client of **Richkware-Manager-Server**, that it obtains the list of all hosts fr
 
 ## Get Started
 
-To obtain the jar file, you can download it from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases), instead if you want to build the jar file by yourself, you need to download:
+To obtain the jar file, you can download it from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases). Instead, if you want to build the jar file by yourself, you need to download:
 
--   java
+-   java (JDK 11+)
 -   maven
 
 ### Compile

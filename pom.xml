@@ -8,13 +8,13 @@
     <version>1.1.2</version>
 
     <properties>
-        <json.version>20160212</json.version>
+        <json.version>20231013</json.version>
         <okhttp.version>3.11.0</okhttp.version>
         <forms_rt.version>7.0.3</forms_rt.version>
-        <gson.version>2.8.2</gson.version>
+        <gson.version>2.10.1</gson.version>
         <JFramework.version>1.2.6</JFramework.version>
-        <java.compiler.target>1.8</java.compiler.target>
-        <java.compiler.source>1.8</java.compiler.source>
+        <java.compiler.target>11</java.compiler.target>
+        <java.compiler.source>11</java.compiler.source>
     </properties>
 
     <build>
@@ -22,7 +22,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.11.0</version>
                 <configuration>
                     <source>${java.compiler.source}</source>
                     <target>${java.compiler.target}</target>
@@ -31,6 +31,7 @@
 
 
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>
@@ -44,32 +45,12 @@
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-assembly-plugin</artifactId>
-                <configuration>
                     <archive>
                         <manifest>
                             <mainClass>it.richkmeli.rmc.RichkwareManagerClient</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>ideauidesigner-maven-plugin</artifactId>
-                <version>1.0-beta-1</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>javac2</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
