@@ -1,6 +1,6 @@
 # Richkware-Manager-Client (RMC)
 
-[![Build Status](https://travis-ci.org/richkmeli/Richkware-Manager-Client.svg?branch=master)](https://travis-ci.org/richkmeli/Richkware-Manager-Client)
+[![Build Status](https://github.com/richkmeli/Richkware-Manager-Client/workflows/Build%20and%20Test/badge.svg)](https://github.com/richkmeli/Richkware-Manager-Client/actions)
 [![](https://jitpack.io/v/richkmeli/Richkware-Manager-Client.svg)](https://jitpack.io/#richkmeli/Richkware-Manager-Client)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/941c900cff06436ab420754cd5bfa26b)](https://app.codacy.com/app/richkmeli/Richkware-Manager-Client?utm_source=github.com&utm_medium=referral&utm_content=richkmeli/Richkware-Manager-Client&utm_campaign=Badge_Grade_Dashboard)
 
@@ -26,16 +26,21 @@
 
 ## Getting Started
 
-You can download the pre-compiled JAR from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases) page.
+### Requirements
 
-To build it from source, you need **Java (JDK 11+)** and **Maven**.
+- **Java 17** or higher
+- **Maven 3.6+**
+
+### Download
+
+You can download the pre-compiled JAR from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases) page.
 
 ### Compilation
 
 Run the following command to compile the project and generate the JAR file:
 
 ```bash
-mvn package
+mvn clean package
 ```
 
 The executable JAR will be generated in the `target/` folder.
