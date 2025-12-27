@@ -1,47 +1,57 @@
-# Richkware-Manager-Client
+# Richkware-Manager-Client (RMC)
 
 [![Build Status](https://travis-ci.org/richkmeli/Richkware-Manager-Client.svg?branch=master)](https://travis-ci.org/richkmeli/Richkware-Manager-Client)
 [![](https://jitpack.io/v/richkmeli/Richkware-Manager-Client.svg)](https://jitpack.io/#richkmeli/Richkware-Manager-Client)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/941c900cff06436ab420754cd5bfa26b)](https://app.codacy.com/app/richkmeli/Richkware-Manager-Client?utm_source=github.com&utm_medium=referral&utm_content=richkmeli/Richkware-Manager-Client&utm_campaign=Badge_Grade_Dashboard)
 
-Client for **Richkware-Manager-Server**, which obtains the list of all hosts from the server and is able to send any kind of commands to them.
+**Richkware-Manager-Client (RMC)** is a desktop client for **Richkware-Manager-Server**. It retrieves the list of infected hosts from the server and provides a GUI to interact with them and send commands.
 
 ## Related Projects
 
-[Richkware](https://github.com/richkmeli/Richkware): Framework for building Windows malware.
+- **[Richkware](https://github.com/richkmeli/Richkware)**: The C++ framework for building the malware agents.
+- **[Richkware-Manager-Server](https://github.com/richkmeli/Richkware-Manager-Server)** (RMS): The backend service that manages the infected hosts.
 
-[Richkware-Manager-Server](https://github.com/richkmeli/Richkware-Manager-Server): Service for the management of hosts in which is present an instance of malware developed using **Richkware** framework.
-
-![](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Diagram/RichkwareDiagram1.2.png)
+![Diagram](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Diagram/RichkwareDiagram1.2.png)
 
 ## GUI
 
+### Secure Connection
 ![Secure Connection](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_secureconnection.PNG)
 
+### Login
 ![Login](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_login.PNG)
 
+### Reverse Commands
 ![Reverse Commands](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/GUI/RMC/RMC_reversecommands.PNG)
 
-## Get Started
+## Getting Started
 
-To obtain the jar file, you can download it from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases). Instead, if you want to build the jar file by yourself, you need to download:
+You can download the pre-compiled JAR from the [RMC Releases](https://github.com/richkmeli/Richkware-Manager-Client/releases) page.
 
--   java (JDK 11+)
--   maven
+To build it from source, you need **Java (JDK 11+)** and **Maven**.
 
-### Compile
+### Compilation
 
-To compile the project and generate the jar file, you have to run:
+Run the following command to compile the project and generate the JAR file:
 
-    mvn package
-    
-After the generation of the jar file, located in the folder "target", you can open the GUI, executing the following command:
+```bash
+mvn package
+```
 
-    java -jar target/RichkwareManagerClient-XXX-jar-with-dependencies.jar
+The executable JAR will be generated in the `target/` folder.
 
-## IDE
+### Running
 
-This project is developed with Intellij IDEA.
-[Open Sources Licences](https://www.jetbrains.com/opensource/) provided by JetBrains.
+Execute the client using Java:
 
-<img src="https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Jetbrains/jetbrains.svg" width="100" alt="Jetbrains Logo"/>
+```bash
+java -jar target/Richkware-Manager-Client-1.1.2-jar-with-dependencies.jar
+```
+
+## IDE Support
+
+This project is developed using **IntelliJ IDEA**.
+
+[![JetBrains Logo](https://raw.githubusercontent.com/richkmeli/richkmeli.github.io/master/Richkware/Jetbrains/jetbrains.svg)](https://www.jetbrains.com/opensource/)
+
+*Open Source License provided by JetBrains.*
