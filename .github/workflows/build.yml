@@ -3,6 +3,7 @@ name: Build and Test
 on:
   push:
     branches: [ master, main, develop ]
+    tags: [ 'v*' ]
   pull_request:
     branches: [ master, main ]
 
@@ -38,3 +39,24 @@ jobs:
       with:
         name: rmc-jar
         path: target/*-jar-with-dependencies.jar
+
+  # NOTE: Formal GitHub Releases are only triggered by pushing a tag (e.g. v1.1.2)
+  release:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Release Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: rmc-jar
+          path: release/
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
