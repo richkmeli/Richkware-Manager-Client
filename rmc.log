@@ -1,0 +1,14 @@
+nohup: ignoring input
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mit.richkmeli.rmc:Richkware-Manager-Client[0;1m >--------------[m
+[[1;34mINFO[m] [1mBuilding Richkware-Manager-Client 1.1.2[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.6.3:java[m [1m(default-cli)[m @ [36mRichkware-Manager-Client[0;1m ---[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] [1;32mBUILD SUCCESS[m
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m
+[[1;34mINFO[m] Total time:  5.228 s
+[[1;34mINFO[m] Finished at: 2025-12-28T14:07:11+01:00
+[[1;34mINFO[m] [1m------------------------------------------------------------------------[m

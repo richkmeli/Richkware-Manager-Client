@@ -30,52 +30,6 @@
                     <release>${java.compiler.target}</release>
                 </configuration>
             </plugin>
-            
-            <!-- IntelliJ IDEA Forms Compiler using Ant -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <version>3.1.0</version>
-                <executions>
-                    <execution>
-                        <id>compile-forms</id>
-                        <phase>process-classes</phase>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                        <configuration>
-                            <target>
-                                <path id="maven.plugin.complete.classpath">
-                                    <path refid="maven.plugin.classpath"/>
-                                    <fileset dir="${project.build.directory}">
-                                        <include name="**/*.jar"/>
-                                    </fileset>
-                                </path>
-                                <taskdef name="javac2" classname="com.intellij.ant.Javac2" classpathref="maven.plugin.complete.classpath"/>
-                                <javac2 destdir="${project.build.outputDirectory}" includeantruntime="false">
-                                    <src path="${project.build.sourceDirectory}"/>
-                                    <classpath>
-                                        <path refid="maven.compile.classpath"/>
-                                        <path refid="maven.plugin.classpath"/>
-                                    </classpath>
-                                </javac2>
-                            </target>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>com.intellij</groupId>
-                        <artifactId>javac2</artifactId>
-                        <version>7.0.3</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>com.intellij</groupId>
-                        <artifactId>forms_rt</artifactId>
-                        <version>${forms_rt.version}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
 
 
             <plugin>

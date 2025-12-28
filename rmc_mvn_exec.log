@@ -1,0 +1,27 @@
+[[1;34mINFO[m] Scanning for projects...
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m-------------< [0;36mit.richkmeli.rmc:Richkware-Manager-Client[0;1m >--------------[m
+[[1;34mINFO[m] [1mBuilding Richkware-Manager-Client 1.1.2[m
+[[1;34mINFO[m] [1m--------------------------------[ jar ]---------------------------------[m
+[[1;34mINFO[m] 
+[[1;34mINFO[m] [1m--- [0;32mexec-maven-plugin:3.6.3:java[m [1m(default-cli)[m @ [36mRichkware-Manager-Client[0;1m ---[m
+java.lang.ClassFormatError: Nest member class_info_index 243 has bad constant type in class file it/richkmeli/rmc/swing/RichkwarePanel
+	at java.base/java.lang.ClassLoader.defineClass1(Native Method)
+	at java.base/java.lang.ClassLoader.defineClass(ClassLoader.java:1027)
+	at java.base/java.security.SecureClassLoader.defineClass(SecureClassLoader.java:150)
+	at java.base/java.net.URLClassLoader.defineClass(URLClassLoader.java:524)
+	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:427)
+	at java.base/java.net.URLClassLoader$1.run(URLClassLoader.java:421)
+	at java.base/java.security.AccessController.doPrivileged(AccessController.java:714)
+	at java.base/java.net.URLClassLoader.findClass(URLClassLoader.java:420)
+	at org.codehaus.mojo.exec.URLClassLoaderBuilder$ExecJavaClassLoader.loadClass(URLClassLoaderBuilder.java:186)
+	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:526)
+	at it.richkmeli.rmc.controller.App.run(App.java:19)
+	at it.richkmeli.rmc.RichkwareManagerClient.main(RichkwareManagerClient.java:11)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at org.codehaus.mojo.exec.AbstractExecJavaBase.executeMainMethod(AbstractExecJavaBase.java:402)
+	at org.codehaus.mojo.exec.ExecJavaMojo.executeMainMethod(ExecJavaMojo.java:142)
+	at org.codehaus.mojo.exec.AbstractExecJavaBase.doExecClassLoader(AbstractExecJavaBase.java:377)
+	at org.codehaus.mojo.exec.AbstractExecJavaBase.lambda$execute$0(AbstractExecJavaBase.java:287)
+	at java.base/java.lang.Thread.run(Thread.java:1583)

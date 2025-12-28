@@ -99,12 +99,100 @@ public class RichkwarePanel implements View {
 
     @Override
     public void initialize() {
+        // Initialize fields if not already done by the IntelliJ Forms compiler
+        if (MainPanel == null) {
+            initializeDefaultUI();
+        }
+        
         MainFrame = new JFrame();
         MainFrame.setTitle("Richkware-Manager-Client");
         MainFrame.setContentPane(MainPanel);
         MainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         MainFrame.pack();
         MainFrame.setVisible(true);
+    }
+
+    private void initializeDefaultUI() {
+        // Create a default main panel when forms designer initialization is not available
+        MainPanel = new JPanel(new BorderLayout());
+        
+        // Initialize all critical panels
+        FIRST_BLOCK = new JPanel();
+        AFTER_LOGIN = new JPanel();
+        DIRECT_CONNECT = new JPanel();
+        ServerInfoPanel = new JPanel();
+        ButtonsPanel = new JPanel();
+        StartSkipPanel = new JPanel();
+        SendCommandsPanel = new JPanel();
+        ConnectToDevicePanel = new JPanel();
+        DeviceResponsePanel = new JPanel();
+        DeviceResponseScrollPanel = new JScrollPane();
+        ConnectToDevicePanelDirect = new JPanel();
+        CommandsPanelDirect = new JPanel();
+        DeviceResponsePanelDirect = new JPanel();
+        DeviceResponseScrollPanelDirect = new JScrollPane();
+        SendCommandPanelDirect = new JPanel();
+        ReverseCmmandsPanel = new JPanel();
+        credentialPanel = new JPanel();
+        urlPanel = new JPanel();
+        SecureConnectPanel = new JPanel();
+        EstablishDeletePanel = new JPanel();
+        DirectConnectPanel = new JPanel();
+        
+        // Initialize critical buttons and fields
+        emailField = new JTextField(15);
+        passwordField = new JPasswordField(15);
+        protocoloField = new JTextField(10);
+        serverField = new JTextField(15);
+        serviceField = new JTextField(15);
+        portField = new JTextField(5);
+        loginButton = new JButton("Login");
+        SkipButton = new JButton("Skip");
+        errorField = new JLabel();
+        
+        // Buttons
+        Disconnect = new JButton("Disconnect");
+        refresh = new JButton("Refresh");
+        ConnectDevice = new JButton("Connect Device");
+        DisconnectDevice = new JButton("Disconnect Device");
+        SendCommandButton = new JButton("Send");
+        ConnectDeviceDirect = new JButton("Connect Device");
+        DisconnectDeviceDirect = new JButton("Disconnect Device");
+        SendCommandButtonDirect = new JButton("Send");
+        loginDirect = new JButton("Login Direct");
+        ConnectDeviceReverse = new JButton("Connect Device");
+        DisconnectDeviceReverse = new JButton("Disconnect Device");
+        SendCommandButtonReverse = new JButton("Send");
+        deleteCryptoStateButton = new JButton("Delete Crypto State");
+        establishSecureConnectionButton = new JButton("Establish Secure Connection");
+        ReceiveResponseButtonReverse = new JButton("Receive Response");
+        
+        // Text fields and areas
+        addressOfDeviceTextField = new JTextField(15);
+        commandToSendTextField = new JTextField(30);
+        addressOfDeviceTextFieldDirect = new JTextField(15);
+        commandToSendTextFieldDirect = new JTextField(30);
+        DeviceResponseTextArea = new JTextArea();
+        DeviceResponseTextAreaDirect = new JTextArea();
+        CommandsTextAreaReverse = new JTextArea();
+        
+        // Checkboxes
+        encryptionCheckBox = new JCheckBox("Encryption");
+        directCheckBox = new JCheckBox("Direct");
+        forceEncryptionCommandCheckBox = new JCheckBox("Force Encryption");
+        directCheckBoxDirect = new JCheckBox("Direct");
+        forceEncryptionCommandCheckBoxDirect = new JCheckBox("Force Encryption");
+        forceEncryptionCommandCheckBoxReverse = new JCheckBox("Force Encryption");
+        autoEstablishSecureConnectionCheckBox = new JCheckBox("Auto Establish");
+        
+        // Progress bar and other components
+        progressBar1 = new JProgressBar();
+        InfoTable = new JTable();
+        TableScrollPanel = new JScrollPane(InfoTable);
+        tabbedPane1 = new JTabbedPane();
+        
+        // Arrange main panel with basic structure
+        MainPanel.add(FIRST_BLOCK, BorderLayout.CENTER);
     }
 
     public RichkwarePanel(App app) {

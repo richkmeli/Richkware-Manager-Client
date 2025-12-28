@@ -18,8 +18,14 @@ public class App implements Runnable {
             controller = new Controller();
             view = new RichkwarePanel(this);
         } catch (Throwable t) {
-            // TODO cattura tutto e mostra dialog, tipo manca bouncy castle
-            JOptionPane.showMessageDialog(null, t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            // Log full stacktrace to stderr (useful when running headless or from terminal)
+            t.printStackTrace(System.err);
+            // Also show a dialog if AWT is available
+            try {
+                JOptionPane.showMessageDialog(null, t.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            } catch (Throwable ignore) {
+                // ignore - we already printed stacktrace
+            }
         }
     }
 
