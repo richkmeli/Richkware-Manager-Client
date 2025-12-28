@@ -108,7 +108,7 @@ public class RichkwarePanel implements View {
         MainFrame.setTitle("Richkware-Manager-Client");
         MainFrame.setContentPane(MainPanel);
         MainFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        MainFrame.setMinimumSize(new Dimension(800, 600));
+        MainFrame.setMinimumSize(new Dimension(450, 500));
         MainFrame.pack();
         MainFrame.setVisible(true);
     }
@@ -189,8 +189,10 @@ public class RichkwarePanel implements View {
         gbc.gridx = 0;
         gbc.gridy = 0;
         gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.BOTH;
+        gbc.weighty = 0;
+        gbc.anchor = GridBagConstraints.NORTH;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(10, 10, 10, 10);
         FIRST_BLOCK.add(SecureConnectPanel, gbc);
         gbc.gridy = 1;
         gbc.weighty = 0;
@@ -292,7 +294,8 @@ public class RichkwarePanel implements View {
         File urlFile = new File("url.conf");
         String filePassword = "test";
         String serverUrlJsonString = Crypto.getData(urlFile, filePassword, KEY_URL);
-        boolean autoEstablish = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH).equalsIgnoreCase("true");
+        String autoEstablishStr = Crypto.getData(urlFile, filePassword, KEY_AUTO_ESTABLISH);
+        boolean autoEstablish = autoEstablishStr.equalsIgnoreCase("true") || autoEstablishStr.equalsIgnoreCase("");
         if (serverUrlJsonString.equalsIgnoreCase("") || !autoEstablish) { // PRIMA APERTURA O SENZA STATO
             loadUrlPanel();
         } else { // auto-establish secure connection
