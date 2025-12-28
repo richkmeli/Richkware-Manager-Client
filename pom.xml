@@ -12,7 +12,7 @@
         <okhttp.version>4.12.0</okhttp.version>
         <forms_rt.version>7.0.3</forms_rt.version>
         <gson.version>2.11.0</gson.version>
-        <JFramework.version>1.2.15</JFramework.version>
+        <JFramework.version>1.2.16</JFramework.version>
         <java.compiler.target>17</java.compiler.target>
         <java.compiler.source>17</java.compiler.source>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
